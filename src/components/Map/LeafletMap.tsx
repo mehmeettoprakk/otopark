@@ -21,6 +21,7 @@ interface LeafletMapProps {
   onParkingLotClick?: (lot: ParkingLot) => void
   userLocation?: MapLocation
   height?: string
+  focusLocation?: { latitude: number; longitude: number } | null
 }
 
 export default function LeafletMap({ 
@@ -28,7 +29,8 @@ export default function LeafletMap({
   parkingLots, 
   onParkingLotClick, 
   userLocation,
-  height = '400px' 
+  height = '400px',
+  focusLocation
 }: LeafletMapProps) {
   const mapRef = useRef<L.Map | null>(null)
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -56,6 +58,17 @@ export default function LeafletMap({
     }
   }, [center])
 
+  // Odaklanma efekti - otopark kartına tıklandığında çalışır
+  useEffect(() => {
+    if (!mapRef.current || !focusLocation) return
+
+    // Haritayı seçilen otoparka odakla - smooth animasyon ile
+    mapRef.current.flyTo([focusLocation.latitude, focusLocation.longitude], 16, {
+      duration: 1.5, // 1.5 saniye animasyon
+      easeLinearity: 0.25
+    })
+  }, [focusLocation])
+
   useEffect(() => {
     if (!mapRef.current) return
 
@@ -68,7 +81,16 @@ export default function LeafletMap({
       const userMarker = L.marker([userLocation.latitude, userLocation.longitude], {
         icon: L.divIcon({
           className: 'user-location-marker',
-          html: '<div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow-lg"></div>',
+          html: `
+            <div style="
+              width: 16px; 
+              height: 16px; 
+              background-color: #3b82f6; 
+              border-radius: 50%; 
+              border: 2px solid white; 
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            "></div>
+          `,
           iconSize: [16, 16],
           iconAnchor: [8, 8]
         })
@@ -83,19 +105,45 @@ export default function LeafletMap({
       const isAlmostFull = occupancyPercentage >= 90
       const isFull = occupancyPercentage >= 100
       
-      let markerColor = 'bg-green-500'
-      if (isFull) markerColor = 'bg-red-500'
-      else if (isAlmostFull) markerColor = 'bg-yellow-500'
+      let backgroundColor = '#10b981' // emerald-500
+      if (isFull) backgroundColor = '#ef4444' // red-500
+      else if (isAlmostFull) backgroundColor = '#f59e0b' // amber-500
 
       const marker = L.marker([lot.latitude, lot.longitude], {
         icon: L.divIcon({
           className: 'parking-marker',
           html: `
-            <div class="flex flex-col items-center">
-              <div class="w-8 h-8 ${markerColor} rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white text-xs font-bold">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+              <div style="
+                width: 32px; 
+                height: 32px; 
+                background-color: ${backgroundColor}; 
+                border-radius: 50%; 
+                border: 2px solid white; 
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                color: white; 
+                font-size: 12px; 
+                font-weight: bold;
+                font-family: system-ui, -apple-system, sans-serif;
+              ">
                 P
               </div>
-              <div class="bg-white px-2 py-1 rounded shadow-md text-xs font-medium mt-1 whitespace-nowrap">
+              <div style="
+                background-color: white; 
+                padding: 4px 8px; 
+                border-radius: 6px; 
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+                font-size: 11px; 
+                font-weight: 500; 
+                margin-top: 4px; 
+                white-space: nowrap;
+                color: #374151;
+                font-family: system-ui, -apple-system, sans-serif;
+                border: 1px solid #e5e7eb;
+              ">
                 ${lot.totalSpaces - lot.occupiedSpaces}/${lot.totalSpaces}
               </div>
             </div>
@@ -129,8 +177,14 @@ export default function LeafletMap({
   return (
     <div 
       ref={mapContainerRef} 
-      style={{ height }}
-      className="w-full rounded-lg shadow-lg z-0"
+      style={{ 
+        height: height === 'responsive' ? undefined : height
+      }}
+      className={`w-full rounded-lg shadow-lg z-0 ${
+        height === 'responsive' 
+          ? 'h-[300px] sm:h-[400px] lg:h-[650px]' 
+          : ''
+      }`}
     />
   )
 } 

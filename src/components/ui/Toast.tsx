@@ -20,10 +20,10 @@ const Toast = ({ toast, onRemove }: ToastProps) => {
   }
 
   const styles = {
-    success: 'bg-green-500 border-green-400',
-    error: 'bg-red-500 border-red-400',
-    warning: 'bg-yellow-500 border-yellow-400',
-    info: 'bg-blue-500 border-blue-400'
+    success: 'bg-gradient-to-r from-emerald-500 to-teal-600 border-emerald-400/50',
+    error: 'bg-gradient-to-r from-red-500 to-rose-600 border-red-400/50',
+    warning: 'bg-gradient-to-r from-amber-500 to-orange-600 border-amber-400/50',
+    info: 'bg-gradient-to-r from-blue-500 to-indigo-600 border-blue-400/50'
   }
 
   return (

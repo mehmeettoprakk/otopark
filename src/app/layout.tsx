@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -21,6 +21,13 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Otopark Takip Sistemi",
   description: "Gerçek zamanlı otopark doluluk takip ve yönetim sistemi",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

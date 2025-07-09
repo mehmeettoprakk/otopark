@@ -319,40 +319,49 @@ function AdminDashboard() {
 
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Header */}
-      <header className="glass border-b border-white/20 sticky top-0 z-50">
+      {/* Admin Header */}
+      <header className="glass border-b border-white/20 sticky top-0 z-50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center">
-              <div className="p-2 bg-white/20 rounded-xl mr-4">
-                <Car className="h-8 w-8 text-white" />
+          <div className="flex justify-between items-center h-24">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl shadow-lg">
+                  <Car className="h-8 w-8 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white">
+                  <div className="w-full h-full bg-orange-400 rounded-full animate-ping"></div>
+                </div>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">Admin Panel</h1>
-                <p className="text-white/70 text-sm">Otopark yönetimi ve istatistikler</p>
+                <h1 className="text-2xl font-bold text-white bg-gradient-to-r from-white to-purple-100 bg-clip-text">
+                  Admin Panel
+                </h1>
+                <p className="text-white/80 text-sm font-medium">
+                  Otopark yönetimi ve istatistikler
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <Button 
-                variant="ghost" 
+                variant="secondary" 
                 onClick={handleSeedData}
                 disabled={isSeeding}
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                className="bg-amber-500/20 border-amber-400/30 text-amber-100 hover:bg-amber-400/30 backdrop-blur-sm"
               >
                 <Database className="h-4 w-4 mr-2" />
                 {isSeeding ? 'Ekleniyor...' : 'Demo Veriler'}
               </Button>
               <Button 
-                variant="ghost" 
+                variant="secondary" 
                 onClick={() => window.location.href = '/'}
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm"
               >
                 Ana Sayfa
               </Button>
               <Button 
-                variant="ghost" 
+                variant="secondary" 
                 onClick={logout}
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                className="bg-red-500/20 border-red-400/30 text-red-100 hover:bg-red-400/30 backdrop-blur-sm"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Çıkış
@@ -363,59 +372,59 @@ function AdminDashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* İstatistikler */}
+        {/* Modern İstatistikler */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="slide-up">
+          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Toplam Otopark</p>
-                  <p className="text-3xl font-bold text-gray-900">{parkingLots.length}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">Toplam Otopark</p>
+                  <p className="text-3xl font-bold text-slate-900">{parkingLots.length}</p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-xl">
-                  <Car className="h-8 w-8 text-blue-600" />
+                <div className="p-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
+                  <Car className="h-8 w-8 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="slide-up" style={{"animationDelay": "0.1s"}}>
+          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300" style={{"animationDelay": "0.1s"}}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Toplam Park Yeri</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalSpaces}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">Toplam Park Yeri</p>
+                  <p className="text-3xl font-bold text-slate-900">{totalSpaces}</p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-xl">
-                  <Users className="h-8 w-8 text-green-600" />
+                <div className="p-4 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl shadow-lg">
+                  <Users className="h-8 w-8 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="slide-up" style={{"animationDelay": "0.2s"}}>
+          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300" style={{"animationDelay": "0.2s"}}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Dolu Park Yeri</p>
-                  <p className="text-3xl font-bold text-gray-900">{totalOccupied}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">Dolu Park Yeri</p>
+                  <p className="text-3xl font-bold text-slate-900">{totalOccupied}</p>
                 </div>
-                <div className="p-3 bg-yellow-100 rounded-xl">
-                  <BarChart3 className="h-8 w-8 text-yellow-600" />
+                <div className="p-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl shadow-lg">
+                  <BarChart3 className="h-8 w-8 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="slide-up" style={{"animationDelay": "0.3s"}}>
+          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300" style={{"animationDelay": "0.3s"}}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-1">Ortalama Doluluk</p>
-                  <p className="text-3xl font-bold text-gray-900">%{averageOccupancy}</p>
+                  <p className="text-sm font-medium text-slate-600 mb-2">Ortalama Doluluk</p>
+                  <p className="text-3xl font-bold text-slate-900">%{averageOccupancy}</p>
                 </div>
-                <div className="p-3 bg-red-100 rounded-xl">
-                  <BarChart3 className="h-8 w-8 text-red-600" />
+                <div className="p-4 bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl shadow-lg">
+                  <BarChart3 className="h-8 w-8 text-white" />
                 </div>
               </div>
             </CardContent>

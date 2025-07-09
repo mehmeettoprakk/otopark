@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button'
 import { useParkingLots } from '@/hooks/useFirebase'
 import { ParkingLot, MapLocation } from '@/types/parking'
 import { calculateOccupancyPercentage, calculateDistance } from '@/lib/utils'
-import { MapPin, Clock, Car, TrendingUp } from 'lucide-react'
+import { MapPin, Clock, Car, TrendingUp, Navigation, X } from 'lucide-react'
 
 // Varsayılan konum (İstanbul merkezi)
 const DEFAULT_CENTER: MapLocation = {
@@ -21,6 +21,19 @@ export default function HomePage() {
   const [userLocation, setUserLocation] = useState<MapLocation | null>(null)
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null)
   const [sortBy, setSortBy] = useState<'distance' | 'occupancy'>('distance')
+  const [focusLocation, setFocusLocation] = useState<{ latitude: number; longitude: number } | null>(null)
+
+  // Google Maps yönlendirme fonksiyonu
+  const openGoogleMapsDirection = (lat: number, lng: number) => {
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+    window.open(googleMapsUrl, '_blank')
+  }
+
+  // Otopark kartına tıklama fonksiyonu
+  const handleParkingLotClick = (lot: ParkingLot) => {
+    setSelectedLot(lot)
+    setFocusLocation({ latitude: lot.latitude, longitude: lot.longitude })
+  }
 
   // Kullanıcı konumunu al
   useEffect(() => {
@@ -65,16 +78,16 @@ export default function HomePage() {
 
   const getOccupancyColor = (occupied: number, total: number) => {
     const percentage = calculateOccupancyPercentage(occupied, total)
-    if (percentage >= 90) return 'text-red-600'
-    if (percentage >= 70) return 'text-yellow-600'
-    return 'text-green-600'
+    if (percentage >= 90) return 'text-red-700 font-semibold'
+    if (percentage >= 70) return 'text-amber-700 font-semibold'
+    return 'text-emerald-700 font-semibold'
   }
 
   const getOccupancyBadgeColor = (occupied: number, total: number) => {
     const percentage = calculateOccupancyPercentage(occupied, total)
-    if (percentage >= 90) return 'bg-red-100 text-red-800'
-    if (percentage >= 70) return 'bg-yellow-100 text-yellow-800'
-    return 'bg-green-100 text-green-800'
+    if (percentage >= 90) return 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg'
+    if (percentage >= 70) return 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg'
+    return 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg'
   }
 
   if (loading) {
@@ -118,50 +131,85 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen gradient-bg">
-      {/* Header */}
-      <header className="glass border-b border-white/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center">
-              <div className="p-2 bg-white/20 rounded-xl mr-4">
-                <Car className="h-8 w-8 text-white" />
+      {/* Modern Header - Mobil Uyumlu */}
+      <header className="glass border-b border-white/20 sticky top-0 z-50 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-20 lg:h-24">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="relative">
+                <div className="p-2 sm:p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl sm:rounded-2xl shadow-lg">
+                  <Car className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+                </div>
+                <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-400 rounded-full border-2 border-white animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-white">Otopark Takip Sistemi</h1>
-                <p className="text-white/70 text-sm">Gerçek zamanlı otopark doluluk takibi</p>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-white bg-gradient-to-r from-white to-indigo-100 bg-clip-text">
+                  Otopark Takip
+                </h1>
+                <p className="text-white/80 text-xs sm:text-sm font-medium hidden sm:block">
+                  Gerçek zamanlı otopark doluluk takibi
+                </p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="hidden md:flex items-center space-x-2 bg-white/10 rounded-2xl px-4 py-2 backdrop-blur-sm">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-white/90 text-sm font-medium">Canlı</span>
+              </div>
               <Button 
-                variant="outline" 
+                variant="secondary" 
+                size="sm"
                 onClick={() => window.location.href = '/admin'}
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
+                className="bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm text-xs sm:text-sm"
               >
-                Admin Panel
+                <span className="hidden sm:inline">Admin Panel</span>
+                <span className="sm:hidden">Admin</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Harita */}
-          <div className="lg:col-span-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MapPin className="h-5 w-5 mr-2" />
-                  Otopark Haritası
-                </CardTitle>
+          <div>
+            <Card className="card-elevated overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-slate-200">
+                <div className="space-y-3">
+                  <CardTitle className="flex items-center text-slate-800">
+                    <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl mr-3 shadow-sm">
+                      <MapPin className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <div className="font-semibold">Otopark Haritası</div>
+                      <div className="text-sm font-normal text-slate-600">{parkingLots.length} otopark</div>
+                    </div>
+                  </CardTitle>
+                  <div className="flex items-center justify-center space-x-6 pb-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-sm"></div>
+                      <span className="text-slate-700 text-sm font-medium">Müsait</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-amber-500 rounded-full shadow-sm"></div>
+                      <span className="text-slate-700 text-sm font-medium">Dolmakta</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
+                      <span className="text-slate-700 text-sm font-medium">Dolu</span>
+                    </div>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 <DynamicMap
                   center={userLocation || DEFAULT_CENTER}
                   parkingLots={parkingLots}
                   userLocation={userLocation || undefined}
-                  onParkingLotClick={setSelectedLot}
-                  height="500px"
+                  onParkingLotClick={handleParkingLotClick}
+                  focusLocation={focusLocation}
+                  height="responsive"
                 />
               </CardContent>
             </Card>
@@ -169,24 +217,26 @@ export default function HomePage() {
 
           {/* Otopark Listesi */}
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+            <Card className="card-elevated">
+              <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-slate-200">
+                <CardTitle className="flex items-center justify-between text-slate-800">
                   <span className="flex items-center">
-                    <TrendingUp className="h-5 w-5 mr-2" />
+                    <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl mr-3 shadow-sm">
+                      <TrendingUp className="h-5 w-5 text-white" />
+                    </div>
                     Otoparklar ({parkingLots.length})
                   </span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'distance' | 'occupancy')}
-                    className="text-sm border rounded px-2 py-1"
+                    className="text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   >
                     <option value="distance">Mesafeye göre</option>
                     <option value="occupancy">Doluluk oranına göre</option>
                   </select>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 max-h-96 overflow-y-auto">
+              <CardContent className="space-y-3 sm:space-y-4 lg:space-y-6 max-h-[400px] sm:max-h-[500px] lg:max-h-[650px] overflow-y-auto p-3 sm:p-4 lg:p-6">
                 {sortedParkingLots.map((lot) => {
                   const occupancyPercentage = calculateOccupancyPercentage(lot.occupiedSpaces, lot.totalSpaces)
                   const availableSpaces = lot.totalSpaces - lot.occupiedSpaces
@@ -202,39 +252,116 @@ export default function HomePage() {
                   return (
                     <div
                       key={lot.id}
-                      className={`p-5 modern-card cursor-pointer transition-all duration-300 ${
+                      className={`group relative bg-white rounded-3xl shadow-lg border border-slate-200 cursor-pointer transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] ${
                         selectedLot?.id === lot.id 
-                          ? 'ring-2 ring-blue-500 bg-blue-50/50' 
-                          : 'hover:shadow-lg'
+                          ? 'ring-4 ring-indigo-500/30 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-300 shadow-2xl scale-[1.02]' 
+                          : 'hover:border-indigo-300'
                       }`}
-                      onClick={() => setSelectedLot(lot)}
+                      onClick={() => handleParkingLotClick(lot)}
                     >
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-semibold text-gray-900">{lot.name}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getOccupancyBadgeColor(lot.occupiedSpaces, lot.totalSpaces)}`}>
-                          %{occupancyPercentage}
-                        </span>
-                      </div>
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-3xl pointer-events-none"></div>
                       
-                      <p className="text-sm text-gray-600 mb-3">{lot.address}</p>
-                      
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="flex items-center">
-                          <Car className="h-4 w-4 mr-1 text-gray-400" />
-                          <span className={getOccupancyColor(lot.occupiedSpaces, lot.totalSpaces)}>
-                            {availableSpaces} boş yer
+                      <div className="relative p-3 sm:p-4 lg:p-6">
+                        <div className="flex justify-between items-start mb-3 sm:mb-4">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-slate-900 text-base sm:text-lg leading-tight mb-1">{lot.name}</h3>
+                            <p className="text-slate-600 text-xs sm:text-sm font-medium">{lot.address}</p>
+                          </div>
+                          <span className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold ${getOccupancyBadgeColor(lot.occupiedSpaces, lot.totalSpaces)}`}>
+                            %{occupancyPercentage}
                           </span>
                         </div>
-                        <div className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1 text-gray-400" />
-                          <span>{lot.hourlyRate} ₺/saat</span>
+                        
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 mb-3 sm:mb-4">
+                          <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-2 sm:p-3 border border-slate-100">
+                            <div className="flex items-center space-x-1.5 sm:space-x-2">
+                              <div className="p-1 sm:p-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg sm:rounded-xl">
+                                <Car className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                              </div>
+                              <div>
+                                <p className="text-xs text-slate-500 font-medium">Boş Yer</p>
+                                <p className={`text-sm sm:text-lg font-bold ${getOccupancyColor(lot.occupiedSpaces, lot.totalSpaces)}`}>
+                                  {availableSpaces}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-2 sm:p-3 border border-slate-100">
+                            <div className="flex items-center space-x-1.5 sm:space-x-2">
+                              <div className="p-1 sm:p-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl">
+                                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                              </div>
+                              <div>
+                                <p className="text-xs text-slate-500 font-medium">Saat/Ücret</p>
+                                <p className="text-sm sm:text-lg font-bold text-slate-900">{lot.hourlyRate}₺</p>
+                              </div>
+                            </div>
+                          </div>
                         </div>
+                        
+                        {/* Distance */}
                         {distance && (
-                          <div className="col-span-2 flex items-center">
-                            <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                            <span>{distance.toFixed(1)} km uzaklıkta</span>
+                          <div className="flex items-center justify-center bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl sm:rounded-2xl py-1.5 sm:py-2 px-3 sm:px-4 border border-slate-100">
+                            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-slate-500" />
+                            <span className="text-xs sm:text-sm font-semibold text-slate-700">{distance.toFixed(1)} km uzaklıkta</span>
                           </div>
                         )}
+                        
+                        {/* Seçili otopark için ek detaylar ve yönlendirme */}
+                        {selectedLot?.id === lot.id && (
+                          <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-indigo-200">
+                            {/* Yönlendirme butonu */}
+                            <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  openGoogleMapsDirection(lot.latitude, lot.longitude)
+                                }}
+                                className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-semibold text-xs sm:text-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] flex items-center justify-center space-x-1.5 sm:space-x-2"
+                              >
+                                <Navigation className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span>Yol Tarifi Al</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  setSelectedLot(null)
+                                }}
+                                className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-[1.02]"
+                              >
+                                <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                              </button>
+                            </div>
+                            
+                            {/* Ek bilgiler */}
+                            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-indigo-200">
+                              <div className="grid grid-cols-2 gap-2 sm:gap-3 text-center">
+                                <div>
+                                  <p className="text-lg sm:text-2xl font-bold text-indigo-600">{lot.totalSpaces}</p>
+                                  <p className="text-xs text-slate-600 font-medium">Toplam</p>
+                                </div>
+                                <div>
+                                  <p className="text-lg sm:text-2xl font-bold text-emerald-600">{lot.totalSpaces - lot.occupiedSpaces}</p>
+                                  <p className="text-xs text-slate-600 font-medium">Boş</p>
+                                </div>
+                              </div>
+                              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-indigo-200 text-center">
+                                <p className="text-xs sm:text-sm text-indigo-700 font-semibold">
+                                  Gerçek zamanlı park durumu
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Status indicator */}
+                        <div className={`absolute top-4 left-4 w-3 h-3 rounded-full shadow-md ${
+                          occupancyPercentage >= 90 ? 'bg-red-500' :
+                          occupancyPercentage >= 70 ? 'bg-amber-500' : 'bg-emerald-500'
+                        }`}></div>
                       </div>
                     </div>
                   )
@@ -242,37 +369,7 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Seçili Otopark Detayı */}
-            {selectedLot && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Detaylar</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <h3 className="font-semibold text-lg mb-2">{selectedLot.name}</h3>
-                  <p className="text-gray-600 mb-4">{selectedLot.address}</p>
-                  
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span>Toplam Park Yeri:</span>
-                      <span className="font-medium">{selectedLot.totalSpaces}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Dolu:</span>
-                      <span className="font-medium text-red-600">{selectedLot.occupiedSpaces}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Boş:</span>
-                      <span className="font-medium text-green-600">{selectedLot.totalSpaces - selectedLot.occupiedSpaces}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Saatlik Ücret:</span>
-                      <span className="font-medium">{selectedLot.hourlyRate} ₺</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+
           </div>
         </div>
       </div>

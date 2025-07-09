@@ -1,20 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafbfc;
-  --foreground: #1a202c;
-  --primary: #3b82f6;
-  --primary-dark: #2563eb;
-  --secondary: #f1f5f9;
-  --accent: #06b6d4;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-card: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-  --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-large: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --surface: #f8fafc;
+  --surface-elevated: #ffffff;
+  
+  /* Modern color palette */
+  --primary: #6366f1;
+  --primary-hover: #5855eb;
+  --primary-light: #a5b4fc;
+  --secondary: #64748b;
+  --accent: #0ea5e9;
+  --accent-light: #38bdf8;
+  
+  /* Status colors */
+  --success: #059669;
+  --success-light: #10b981;
+  --warning: #d97706;
+  --warning-light: #f59e0b;
+  --error: #dc2626;
+  --error-light: #ef4444;
+  
+  /* Modern gradients */
+  --gradient-bg: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+  --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --gradient-accent: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  
+  /* Modern shadows */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-color: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 @theme inline {
@@ -27,10 +47,23 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0f172a;
-    --foreground: #f1f5f9;
-    --secondary: #1e293b;
-    --gradient-bg: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
-    --gradient-card: linear-gradient(145deg, #1e293b 0%, #334155 100%);
+    --foreground: #f8fafc;
+    --surface: #1e293b;
+    --surface-elevated: #334155;
+    
+    /* Dark mode adjustments */
+    --primary: #818cf8;
+    --primary-hover: #a5b4fc;
+    --primary-light: #c7d2fe;
+    --secondary: #94a3b8;
+    --accent: #38bdf8;
+    --accent-light: #7dd3fc;
+    
+    /* Dark gradients */
+    --gradient-bg: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #581c87 100%);
+    --gradient-card: linear-gradient(145deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.8) 100%);
+    --gradient-primary: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    --gradient-accent: linear-gradient(135deg, #38bdf8 0%, #06b6d4 100%);
   }
 }
 
@@ -58,32 +91,50 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-              radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 90%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
   pointer-events: none;
 }
 
-/* Glassmorphism effect */
+/* Enhanced glassmorphism effect */
 .glass {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: var(--shadow-medium);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: var(--shadow-xl);
 }
 
 /* Modern card styles */
 .modern-card {
-  background: var(--gradient-card);
-  border-radius: 16px;
+  background: var(--surface-elevated);
+  border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modern-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-large);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+/* Elevated card for important elements */
+.card-elevated {
+  background: var(--gradient-card);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-color);
+  backdrop-filter: blur(20px);
 }
 
 /* Smooth animations */
@@ -120,9 +171,10 @@ body {
 /* Enhanced loading spinner */
 .loading-spinner {
   animation: spin 1s linear infinite;
-  background: conic-gradient(from 0deg, var(--primary), transparent);
+  background: conic-gradient(from 0deg, var(--primary), var(--accent), var(--primary));
   border-radius: 50%;
   mask: radial-gradient(circle 8px, transparent 50%, white 51%);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
 }
 
 @keyframes spin {
@@ -135,9 +187,17 @@ body {
 .parking-marker {
   background: transparent !important;
   border: none !important;
+  box-shadow: none !important;
 }
 
 .user-location-marker {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Leaflet marker container optimizasyonu */
+.leaflet-marker-icon {
   background: transparent !important;
   border: none !important;
 }
@@ -156,6 +216,55 @@ body {
 @media (max-width: 768px) {
   .parking-marker {
     transform: scale(0.8);
+  }
+  
+  /* Mobil dokunmatik iyileştirmeleri */
+  button, 
+  .cursor-pointer,
+  [role="button"] {
+    min-height: 44px; /* Apple HIG önerisi */
+    touch-action: manipulation; /* Çift dokunma zoom'u devre dışı bırak */
+  }
+  
+  /* Mobil font optimizasyonu */
+  body {
+    -webkit-text-size-adjust: 100%; /* Safari zoom kontrolü */
+    text-size-adjust: 100%;
+  }
+  
+  /* Mobil scrollbar gizle */
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 2px;
+  }
+  
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 1px;
+  }
+  
+  /* Mobil harita marker optimizasyonu */
+  .leaflet-marker-icon {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  
+  /* Card hover efektlerini mobilde devre dışı bırak */
+  .modern-card:hover,
+  .card-elevated:hover {
+    transform: none;
+    box-shadow: var(--shadow-md);
+  }
+}
+
+/* Extra small screens için */
+@media (max-width: 480px) {
+  /* Çok küçük ekranlar için font optimizasyonu */
+  h1 {
+    font-size: 1rem !important;
+  }
+  
+  /* Mobile scroll optimization */
+  body {
+    touch-action: pan-x pan-y;
   }
 }
 

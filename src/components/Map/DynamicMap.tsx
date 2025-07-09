@@ -9,6 +9,7 @@ interface DynamicMapProps {
   onParkingLotClick?: (lot: ParkingLot) => void
   userLocation?: MapLocation
   height?: string
+  focusLocation?: { latitude: number; longitude: number } | null
 }
 
 const Map = dynamic(() => import('./LeafletMap'), {
