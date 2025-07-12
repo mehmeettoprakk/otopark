@@ -133,7 +133,7 @@ export default function HomePage() {
     <div className="min-h-screen gradient-bg">
       {/* Modern Header - Mobil Uyumlu */}
       <header className="glass border-b border-white/20 sticky top-0 z-50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="max-w-[1800px] mx-auto px-3 sm:px-6 lg:px-12">
           <div className="flex justify-between items-center h-16 sm:h-20 lg:h-24">
             <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="relative">
@@ -170,8 +170,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+      <div className="max-w-[1800px] mx-auto px-3 sm:px-6 lg:px-12 py-6 sm:py-8 lg:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
           {/* Harita */}
           <div>
             <Card className="card-elevated overflow-hidden">
@@ -182,23 +182,36 @@ export default function HomePage() {
                       <MapPin className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <div className="font-semibold">Otopark Haritası</div>
-                      <div className="text-sm font-normal text-slate-600">{parkingLots.length} otopark</div>
+                      <div className="font-semibold text-xl">Otopark Haritası</div>
+                      <div className="text-base font-normal text-slate-600">{parkingLots.length} otopark</div>
                     </div>
                   </CardTitle>
-                  <div className="flex items-center justify-center space-x-6 pb-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-sm"></div>
-                      <span className="text-slate-700 text-sm font-medium">Müsait</span>
+                  <div className="flex items-center justify-between pb-2">
+                    <div className="flex items-center space-x-8">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 bg-emerald-500 rounded-full shadow-sm"></div>
+                        <span className="text-slate-700 text-base font-medium">Müsait</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 bg-amber-500 rounded-full shadow-sm"></div>
+                        <span className="text-slate-700 text-base font-medium">Dolmakta</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-4 h-4 bg-red-500 rounded-full shadow-sm"></div>
+                        <span className="text-slate-700 text-base font-medium">Dolu</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-amber-500 rounded-full shadow-sm"></div>
-                      <span className="text-slate-700 text-sm font-medium">Dolmakta</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full shadow-sm"></div>
-                      <span className="text-slate-700 text-sm font-medium">Dolu</span>
-                    </div>
+                    {userLocation && (
+                      <Button
+                        onClick={() => setFocusLocation({ latitude: userLocation.latitude, longitude: userLocation.longitude })}
+                        className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-3 rounded-xl font-medium text-base hover:shadow-lg transition-all duration-300"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                          <span>Konumuma Git</span>
+                        </div>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -209,14 +222,14 @@ export default function HomePage() {
                   userLocation={userLocation || undefined}
                   onParkingLotClick={handleParkingLotClick}
                   focusLocation={focusLocation}
-                  height="responsive"
+                  height="large"
                 />
               </CardContent>
             </Card>
           </div>
 
           {/* Otopark Listesi */}
-          <div className="space-y-6">
+          <div className="space-y-8">
             <Card className="card-elevated">
               <CardHeader className="bg-gradient-to-r from-slate-50 to-gray-50 border-b border-slate-200">
                 <CardTitle className="flex items-center justify-between text-slate-800">
@@ -224,19 +237,19 @@ export default function HomePage() {
                     <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl mr-3 shadow-sm">
                       <TrendingUp className="h-5 w-5 text-white" />
                     </div>
-                    Otoparklar ({parkingLots.length})
+                    <span className="text-xl font-semibold">Otoparklar ({parkingLots.length})</span>
                   </span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'distance' | 'occupancy')}
-                    className="text-sm border border-slate-300 rounded-xl px-3 py-2 bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="text-base border border-slate-300 rounded-xl px-4 py-3 bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                   >
                     <option value="distance">Mesafeye göre</option>
                     <option value="occupancy">Doluluk oranına göre</option>
                   </select>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 sm:space-y-4 lg:space-y-6 max-h-[400px] sm:max-h-[500px] lg:max-h-[650px] overflow-y-auto p-3 sm:p-4 lg:p-6">
+              <CardContent className="space-y-4 sm:space-y-6 lg:space-y-8 max-h-[500px] sm:max-h-[600px] lg:max-h-[900px] overflow-y-auto p-4 sm:p-6 lg:p-10">
                 {sortedParkingLots.map((lot) => {
                   const occupancyPercentage = calculateOccupancyPercentage(lot.occupiedSpaces, lot.totalSpaces)
                   const availableSpaces = lot.totalSpaces - lot.occupiedSpaces
@@ -262,41 +275,41 @@ export default function HomePage() {
                       {/* Gradient overlay */}
                       <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-3xl pointer-events-none"></div>
                       
-                      <div className="relative p-3 sm:p-4 lg:p-6">
-                        <div className="flex justify-between items-start mb-3 sm:mb-4">
+                      <div className="relative p-6 sm:p-8 lg:p-10">
+                        <div className="flex justify-between items-start mb-4 sm:mb-6">
                           <div className="flex-1">
-                            <h3 className="font-bold text-slate-900 text-base sm:text-lg leading-tight mb-1">{lot.name}</h3>
-                            <p className="text-slate-600 text-xs sm:text-sm font-medium">{lot.address}</p>
+                            <h3 className="font-bold text-slate-900 text-lg sm:text-xl leading-tight mb-2">{lot.name}</h3>
+                            <p className="text-slate-600 text-sm sm:text-base font-medium">{lot.address}</p>
                           </div>
-                          <span className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold ${getOccupancyBadgeColor(lot.occupiedSpaces, lot.totalSpaces)}`}>
+                          <span className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold ${getOccupancyBadgeColor(lot.occupiedSpaces, lot.totalSpaces)}`}>
                             %{occupancyPercentage}
                           </span>
                         </div>
                         
                         {/* Stats Grid */}
-                        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4 mb-3 sm:mb-4">
-                          <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-2 sm:p-3 border border-slate-100">
-                            <div className="flex items-center space-x-1.5 sm:space-x-2">
-                              <div className="p-1 sm:p-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg sm:rounded-xl">
-                                <Car className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
+                          <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-100">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg sm:rounded-xl">
+                                <Car className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                               </div>
                               <div>
-                                <p className="text-xs text-slate-500 font-medium">Boş Yer</p>
-                                <p className={`text-sm sm:text-lg font-bold ${getOccupancyColor(lot.occupiedSpaces, lot.totalSpaces)}`}>
+                                <p className="text-xs sm:text-sm text-slate-500 font-medium">Boş Yer</p>
+                                <p className={`text-base sm:text-xl font-bold ${getOccupancyColor(lot.occupiedSpaces, lot.totalSpaces)}`}>
                                   {availableSpaces}
                                 </p>
                               </div>
                             </div>
                           </div>
                           
-                          <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-2 sm:p-3 border border-slate-100">
-                            <div className="flex items-center space-x-1.5 sm:space-x-2">
-                              <div className="p-1 sm:p-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl">
-                                <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+                          <div className="bg-slate-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-100">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                              <div className="p-1.5 sm:p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg sm:rounded-xl">
+                                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                               </div>
                               <div>
-                                <p className="text-xs text-slate-500 font-medium">Saat/Ücret</p>
-                                <p className="text-sm sm:text-lg font-bold text-slate-900">{lot.hourlyRate}₺</p>
+                                <p className="text-xs sm:text-sm text-slate-500 font-medium">Saat/Ücret</p>
+                                <p className="text-base sm:text-xl font-bold text-slate-900">{lot.hourlyRate}₺</p>
                               </div>
                             </div>
                           </div>
@@ -304,25 +317,25 @@ export default function HomePage() {
                         
                         {/* Distance */}
                         {distance && (
-                          <div className="flex items-center justify-center bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl sm:rounded-2xl py-1.5 sm:py-2 px-3 sm:px-4 border border-slate-100">
-                            <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-slate-500" />
-                            <span className="text-xs sm:text-sm font-semibold text-slate-700">{distance.toFixed(1)} km uzaklıkta</span>
+                          <div className="flex items-center justify-center bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl sm:rounded-2xl py-2 sm:py-3 px-4 sm:px-5 border border-slate-100">
+                            <MapPin className="h-4 w-4 sm:h-5 sm:w-5 mr-2 sm:mr-3 text-slate-500" />
+                            <span className="text-sm sm:text-base font-semibold text-slate-700">{distance.toFixed(1)} km uzaklıkta</span>
                           </div>
                         )}
                         
                         {/* Seçili otopark için ek detaylar ve yönlendirme */}
                         {selectedLot?.id === lot.id && (
-                          <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-indigo-200">
+                          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-indigo-200">
                             {/* Yönlendirme butonu */}
-                            <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4">
+                            <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   openGoogleMapsDirection(lot.latitude, lot.longitude)
                                 }}
-                                className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-semibold text-xs sm:text-sm transition-all duration-300 hover:shadow-lg hover:scale-[1.02] flex items-center justify-center space-x-1.5 sm:space-x-2"
+                                className="flex-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 sm:px-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold text-sm sm:text-base transition-all duration-300 hover:shadow-lg hover:scale-[1.02] flex items-center justify-center space-x-2 sm:space-x-3"
                               >
-                                <Navigation className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <Navigation className="h-4 w-4 sm:h-5 sm:w-5" />
                                 <span>Yol Tarifi Al</span>
                               </button>
                               <button
@@ -330,26 +343,26 @@ export default function HomePage() {
                                   e.stopPropagation()
                                   setSelectedLot(null)
                                 }}
-                                className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-2.5 sm:px-3 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-[1.02]"
+                                className="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 sm:px-4 py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all duration-300 hover:scale-[1.02]"
                               >
-                                <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <X className="h-4 w-4 sm:h-5 sm:w-5" />
                               </button>
                             </div>
                             
                             {/* Ek bilgiler */}
-                            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-indigo-200">
-                              <div className="grid grid-cols-2 gap-2 sm:gap-3 text-center">
+                            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-indigo-200">
+                              <div className="grid grid-cols-2 gap-3 sm:gap-4 text-center">
                                 <div>
-                                  <p className="text-lg sm:text-2xl font-bold text-indigo-600">{lot.totalSpaces}</p>
-                                  <p className="text-xs text-slate-600 font-medium">Toplam</p>
+                                  <p className="text-2xl sm:text-3xl font-bold text-indigo-600">{lot.totalSpaces}</p>
+                                  <p className="text-sm sm:text-base text-slate-600 font-medium">Toplam</p>
                                 </div>
                                 <div>
-                                  <p className="text-lg sm:text-2xl font-bold text-emerald-600">{lot.totalSpaces - lot.occupiedSpaces}</p>
-                                  <p className="text-xs text-slate-600 font-medium">Boş</p>
+                                  <p className="text-2xl sm:text-3xl font-bold text-emerald-600">{lot.totalSpaces - lot.occupiedSpaces}</p>
+                                  <p className="text-sm sm:text-base text-slate-600 font-medium">Boş</p>
                                 </div>
                               </div>
-                              <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-indigo-200 text-center">
-                                <p className="text-xs sm:text-sm text-indigo-700 font-semibold">
+                              <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-indigo-200 text-center">
+                                <p className="text-sm sm:text-base text-indigo-700 font-semibold">
                                   Gerçek zamanlı park durumu
                                 </p>
                               </div>
@@ -358,7 +371,7 @@ export default function HomePage() {
                         )}
                         
                         {/* Status indicator */}
-                        <div className={`absolute top-4 left-4 w-3 h-3 rounded-full shadow-md ${
+                        <div className={`absolute top-6 left-6 w-4 h-4 rounded-full shadow-md ${
                           occupancyPercentage >= 90 ? 'bg-red-500' :
                           occupancyPercentage >= 70 ? 'bg-amber-500' : 'bg-emerald-500'
                         }`}></div>

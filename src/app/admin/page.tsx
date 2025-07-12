@@ -101,6 +101,18 @@ function LoginForm() {
   )
 }
 
+// Form data tipi
+interface ParkingLotFormData {
+  name: string
+  address: string
+  latitude: string | number
+  longitude: string | number
+  totalSpaces: string | number
+  occupiedSpaces: string | number
+  hourlyRate: string | number
+  isActive: boolean
+}
+
 // Otopark ekleme/düzenleme formu
 function ParkingLotForm({ 
   lot, 
@@ -111,13 +123,14 @@ function ParkingLotForm({
   onSave: (data: Partial<ParkingLot>) => void
   onCancel: () => void
 }) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ParkingLotFormData>({
     name: lot?.name || '',
     address: lot?.address || '',
-    latitude: lot?.latitude || 0,
-    longitude: lot?.longitude || 0,
-    totalSpaces: lot?.totalSpaces || 0,
-    hourlyRate: lot?.hourlyRate || 0,
+    latitude: lot?.latitude || '',
+    longitude: lot?.longitude || '',
+    totalSpaces: lot?.totalSpaces || '',
+    occupiedSpaces: lot?.occupiedSpaces || 0,
+    hourlyRate: lot?.hourlyRate || '',
     isActive: lot?.isActive ?? true
   })
 
@@ -125,7 +138,11 @@ function ParkingLotForm({
     e.preventDefault()
     onSave({
       ...formData,
-      occupiedSpaces: lot?.occupiedSpaces || 0
+      latitude: parseFloat(formData.latitude as string) || 0,
+      longitude: parseFloat(formData.longitude as string) || 0,
+      totalSpaces: parseInt(formData.totalSpaces as string) || 0,
+      occupiedSpaces: parseInt(formData.occupiedSpaces as string) || 0,
+      hourlyRate: parseFloat(formData.hourlyRate as string) || 0
     })
   }
 
@@ -146,6 +163,7 @@ function ParkingLotForm({
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Örn: Taksim Meydanı Otoparkı"
                 required
               />
             </div>
@@ -157,10 +175,28 @@ function ParkingLotForm({
                 type="number"
                 min="1"
                 value={formData.totalSpaces}
-                onChange={(e) => setFormData({...formData, totalSpaces: parseInt(e.target.value)})}
+                onChange={(e) => setFormData({...formData, totalSpaces: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Örn: 150"
                 required
               />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Şu An Dolu Park Yeri
+              </label>
+              <input
+                type="number"
+                min="0"
+                max={parseInt(formData.totalSpaces as string) || 999}
+                value={formData.occupiedSpaces}
+                onChange={(e) => setFormData({...formData, occupiedSpaces: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Örn: 75"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                🚗 Otoparka araba geldiğinde/gittiğinde bu sayıyı güncelleyin
+              </p>
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -171,34 +207,53 @@ function ParkingLotForm({
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Örn: Taksim Meydanı, Beyoğlu/İstanbul"
                 required
               />
             </div>
+            <div className="md:col-span-2 bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 className="font-medium text-blue-900 mb-2">🗺️ Google Maps&apos;ten Konum Nasıl Alınır?</h4>
+              <ol className="text-sm text-blue-800 space-y-1">
+                <li>1. Google Maps&apos;i açın (maps.google.com)</li>
+                <li>2. Otoparkın bulunduğu yeri bulun</li>
+                <li>3. Tam konuma <strong>sağ tıklayın</strong></li>
+                <li>4. Çıkan menüden koordinat numaralarına tıklayın</li>
+                <li>5. Virgülden önceki sayı = <strong>Enlem</strong>, virgülden sonraki = <strong>Boylam</strong></li>
+              </ol>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Enlem (Latitude)
+                Harita Konumu - Enlem (Kuzey-Güney)
               </label>
               <input
                 type="number"
                 step="any"
                 value={formData.latitude}
-                onChange={(e) => setFormData({...formData, latitude: parseFloat(e.target.value)})}
+                onChange={(e) => setFormData({...formData, latitude: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Google Maps'ten alın (Örn: 41.0369)"
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">
+                📍 Google Maps&apos;te konuma sağ tıklayın, çıkan sayının ilki (virgülden önceki)
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Boylam (Longitude)
+                Harita Konumu - Boylam (Doğu-Batı)
               </label>
               <input
                 type="number"
                 step="any"
                 value={formData.longitude}
-                onChange={(e) => setFormData({...formData, longitude: parseFloat(e.target.value)})}
+                onChange={(e) => setFormData({...formData, longitude: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Google Maps'ten alın (Örn: 28.9852)"
                 required
               />
+              <p className="text-xs text-gray-500 mt-1">
+                📍 Google Maps&apos;te konuma sağ tıklayın, çıkan sayının ikincisi (virgülden sonraki)
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -209,8 +264,9 @@ function ParkingLotForm({
                 min="0"
                 step="0.01"
                 value={formData.hourlyRate}
-                onChange={(e) => setFormData({...formData, hourlyRate: parseFloat(e.target.value)})}
+                onChange={(e) => setFormData({...formData, hourlyRate: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Örn: 25.50"
                 required
               />
             </div>
@@ -286,6 +342,19 @@ function AdminDashboard() {
     }
   }
 
+  // Hızlı doluluk güncelleme
+  const handleQuickOccupancyUpdate = async (lot: ParkingLot, change: number) => {
+    const newOccupiedSpaces = Math.max(0, Math.min(lot.totalSpaces, lot.occupiedSpaces + change))
+    
+    try {
+      await updateParkingLot(lot.id, { occupiedSpaces: newOccupiedSpaces })
+      showSuccess(`${lot.name} doluluk güncellendi: ${newOccupiedSpaces}/${lot.totalSpaces}`)
+    } catch (err) {
+      console.error('Doluluk güncelleme hatası:', err)
+      showError('Doluluk güncellenirken hata oluştu.')
+    }
+  }
+
   const handleSeedData = async () => {
     if (confirm('Demo verileri eklensin mi? Bu işlem mevcut verilerin üzerine yazabilir.')) {
       setIsSeeding(true)
@@ -321,7 +390,7 @@ function AdminDashboard() {
     <div className="min-h-screen gradient-bg">
       {/* Admin Header */}
       <header className="glass border-b border-white/20 sticky top-0 z-50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1800px] mx-auto px-6 lg:px-12">
           <div className="flex justify-between items-center h-24">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -371,65 +440,75 @@ function AdminDashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="max-w-[1800px] mx-auto px-6 lg:px-12 py-8">
         {/* Modern İstatistikler */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">Toplam Otopark</p>
-                  <p className="text-3xl font-bold text-slate-900">{parkingLots.length}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                      <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full">
+            <CardContent className="p-6 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Toplam Otopark</p>
+                  <p className="text-4xl font-bold text-slate-900 leading-tight">{parkingLots.length}</p>
                 </div>
-                <div className="p-4 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
-                  <Car className="h-8 w-8 text-white" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300" style={{"animationDelay": "0.1s"}}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">Toplam Park Yeri</p>
-                  <p className="text-3xl font-bold text-slate-900">{totalSpaces}</p>
-                </div>
-                <div className="p-4 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl shadow-lg">
-                  <Users className="h-8 w-8 text-white" />
+                <div className="flex-shrink-0 ml-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg flex items-center justify-center">
+                    <Car className="h-8 w-8 text-white" />
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300" style={{"animationDelay": "0.2s"}}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">Dolu Park Yeri</p>
-                  <p className="text-3xl font-bold text-slate-900">{totalOccupied}</p>
+          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full" style={{"animationDelay": "0.1s"}}>
+            <CardContent className="p-6 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Toplam Park Yeri</p>
+                  <p className="text-4xl font-bold text-slate-900 leading-tight">{totalSpaces}</p>
                 </div>
-                <div className="p-4 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl shadow-lg">
-                  <BarChart3 className="h-8 w-8 text-white" />
+                <div className="flex-shrink-0 ml-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl shadow-lg flex items-center justify-center">
+                    <Users className="h-8 w-8 text-white" />
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300" style={{"animationDelay": "0.3s"}}>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-slate-600 mb-2">Ortalama Doluluk</p>
-                  <p className="text-3xl font-bold text-slate-900">%{averageOccupancy}</p>
+          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full" style={{"animationDelay": "0.2s"}}>
+            <CardContent className="p-6 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Dolu Park Yeri</p>
+                  <p className="text-4xl font-bold text-slate-900 leading-tight">{totalOccupied}</p>
                 </div>
-                <div className="p-4 bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl shadow-lg">
-                  <BarChart3 className="h-8 w-8 text-white" />
+                <div className="flex-shrink-0 ml-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl shadow-lg flex items-center justify-center">
+                    <BarChart3 className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full" style={{"animationDelay": "0.3s"}}>
+            <CardContent className="p-6 h-full">
+              <div className="flex items-center justify-between h-full">
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Ortalama Doluluk</p>
+                  <p className="text-4xl font-bold text-slate-900 leading-tight">%{averageOccupancy}</p>
+                </div>
+                <div className="flex-shrink-0 ml-4">
+                  <div className="w-16 h-16 bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl shadow-lg flex items-center justify-center">
+                    <BarChart3 className="h-8 w-8 text-white" />
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+
 
         {/* Form veya Otopark Listesi */}
         {showForm || editingLot ? (
@@ -442,98 +521,200 @@ function AdminDashboard() {
             }}
           />
         ) : (
-          <Card>
-            <CardHeader>
+          <Card className="card-elevated slide-up hover:shadow-2xl transition-all duration-500 bg-white border-0 shadow-xl">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-8 py-6">
               <div className="flex justify-between items-center">
-                <CardTitle>Otoparklar</CardTitle>
-                <Button onClick={() => setShowForm(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
+                <CardTitle className="text-2xl font-bold text-gray-900 flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <Car className="h-6 w-6 text-white" />
+                  </div>
+                  <span>🏢 Otoparklar</span>
+                </CardTitle>
+                <Button 
+                  onClick={() => setShowForm(true)}
+                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
                   Yeni Otopark Ekle
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
+              <div className="w-full">
+                <table className="w-full table-fixed">
+                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Otopark
+                      <th className="w-[22%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                        🏢 Otopark
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Doluluk
+                      <th className="w-[35%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                        🚗 Doluluk & Güncelleme
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ücret
+                      <th className="w-[12%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                        💰 Ücret
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Durum
+                      <th className="w-[10%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                        📊 Durum
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Güncelleme
+                      <th className="w-[11%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                        🕒 Güncelleme
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        İşlemler
+                      <th className="w-[10%] px-6 py-4 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">
+                        ⚡ İşlemler
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {parkingLots.map((lot) => {
+                  <tbody className="bg-white divide-y divide-gray-100">
+                    {parkingLots.map((lot, index) => {
                       const occupancyPercentage = calculateOccupancyPercentage(lot.occupiedSpaces, lot.totalSpaces)
                       return (
-                        <tr key={lot.id}>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">{lot.name}</div>
-                              <div className="text-sm text-gray-500">{lot.address}</div>
+                        <tr key={lot.id} className="hover:bg-gray-50 transition-all duration-300 hover:shadow-lg table-row-enter border-b border-gray-100 last:border-b-0" style={{animationDelay: `${index * 0.1}s`}}>
+                          <td className="px-6 py-4 align-top">
+                            <div className="flex items-center space-x-3">
+                              <div className="flex-shrink-0">
+                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                                  <Car className="h-5 w-5 text-white" />
+                                </div>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="text-sm font-bold text-gray-900 truncate">{lot.name}</div>
+                                <div className="text-xs text-gray-600 truncate">{lot.address}</div>
+                              </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">
-                              {lot.occupiedSpaces}/{lot.totalSpaces} (%{occupancyPercentage})
+                          <td className="px-6 py-4 align-top">
+                            <div className="mb-3">
+                              <div className="text-sm font-bold text-gray-900 mb-2">
+                                {lot.occupiedSpaces}/{lot.totalSpaces} (%{occupancyPercentage})
+                              </div>
+                              <div className="w-full bg-gray-200 rounded-full h-2 mb-3 shadow-inner">
+                                <div 
+                                  className={`h-2 rounded-full transition-all duration-700 ${
+                                    occupancyPercentage >= 90 ? 'bg-gradient-to-r from-red-500 to-red-600' :
+                                    occupancyPercentage >= 70 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' : 'bg-gradient-to-r from-green-500 to-green-600'
+                                  }`}
+                                  style={{ width: `${occupancyPercentage}%` }}
+                                ></div>
+                              </div>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2">
-                              <div 
-                                className={`h-2 rounded-full ${
-                                  occupancyPercentage >= 90 ? 'bg-red-600' :
-                                  occupancyPercentage >= 70 ? 'bg-yellow-600' : 'bg-green-600'
-                                }`}
-                                style={{ width: `${occupancyPercentage}%` }}
-                              ></div>
+                            <div className="flex items-center justify-between mt-3">
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1 p-1 bg-red-50 rounded-lg">
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, -10)}
+                                    disabled={lot.occupiedSpaces <= 0}
+                                    className="w-8 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="10 araç çıktı"
+                                  >
+                                    -10
+                                  </button>
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, -5)}
+                                    disabled={lot.occupiedSpaces <= 0}
+                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="5 araç çıktı"
+                                  >
+                                    -5
+                                  </button>
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, -3)}
+                                    disabled={lot.occupiedSpaces <= 0}
+                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="3 araç çıktı"
+                                  >
+                                    -3
+                                  </button>
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, -1)}
+                                    disabled={lot.occupiedSpaces <= 0}
+                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="1 araç çıktı"
+                                  >
+                                    -1
+                                  </button>
+                                </div>
+                                <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                                <div className="flex items-center gap-1 p-1 bg-green-50 rounded-lg">
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, 1)}
+                                    disabled={lot.occupiedSpaces >= lot.totalSpaces}
+                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="1 araç girdi"
+                                  >
+                                    +1
+                                  </button>
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, 3)}
+                                    disabled={lot.occupiedSpaces >= lot.totalSpaces}
+                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="3 araç girdi"
+                                  >
+                                    +3
+                                  </button>
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, 5)}
+                                    disabled={lot.occupiedSpaces >= lot.totalSpaces}
+                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="5 araç girdi"
+                                  >
+                                    +5
+                                  </button>
+                                  <button
+                                    onClick={() => handleQuickOccupancyUpdate(lot, 10)}
+                                    disabled={lot.occupiedSpaces >= lot.totalSpaces}
+                                    className="w-8 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    title="10 araç girdi"
+                                  >
+                                    +10
+                                  </button>
+                                </div>
+                              </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {lot.hourlyRate} ₺/saat
+                          <td className="px-6 py-4 align-top">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                                <span className="text-white font-bold text-sm">₺</span>
+                              </div>
+                              <div className="text-sm font-bold text-gray-900">
+                                {lot.hourlyRate}₺
+                              </div>
+                            </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          <td className="px-6 py-4 align-top">
+                            <span className={`inline-flex items-center px-2 py-1 text-xs font-bold rounded-full shadow-lg transition-all duration-300 ${
                               lot.isActive 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-red-100 text-red-800'
+                                ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 hover:from-green-200 hover:to-green-300' 
+                                : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 hover:from-red-200 hover:to-red-300'
                             }`}>
+                              <div className={`w-1.5 h-1.5 rounded-full mr-1 ${
+                                lot.isActive ? 'bg-green-500' : 'bg-red-500'
+                              }`}></div>
                               {lot.isActive ? 'Aktif' : 'Pasif'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {formatDate(lot.updatedAt)}
+                          <td className="px-6 py-4 align-top">
+                            <div className="text-xs font-medium text-gray-700">
+                              {formatDate(lot.updatedAt)}
+                            </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div className="flex gap-2 justify-end">
-                              <Button 
-                                size="sm" 
-                                variant="outline"
+                          <td className="px-6 py-4 align-top text-right">
+                            <div className="flex gap-1 justify-end">
+                              <button
                                 onClick={() => setEditingLot(lot)}
+                                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                title="Düzenle"
                               >
                                 <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="danger"
+                              </button>
+                              <button
                                 onClick={() => handleDelete(lot.id)}
+                                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                title="Sil"
                               >
                                 <Trash2 className="h-4 w-4" />
-                              </Button>
+                              </button>
                             </div>
                           </td>
                         </tr>

@@ -183,6 +183,8 @@ export default function LeafletMap({
       className={`w-full rounded-lg shadow-lg z-0 ${
         height === 'responsive' 
           ? 'h-[300px] sm:h-[400px] lg:h-[650px]' 
+          : height === 'large'
+          ? 'h-[400px] sm:h-[500px] lg:h-[800px]'
           : ''
       }`}
     />
