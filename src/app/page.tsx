@@ -9,11 +9,11 @@ import { ParkingLot, MapLocation } from '@/types/parking'
 import { calculateOccupancyPercentage, calculateDistance } from '@/lib/utils'
 import { MapPin, Clock, Car, TrendingUp, Navigation, X } from 'lucide-react'
 
-// Varsayılan konum (İstanbul merkezi)
+// Varsayılan konum (Türkiye merkezi)
 const DEFAULT_CENTER: MapLocation = {
-  latitude: 41.0082,
-  longitude: 28.9784,
-  zoom: 11
+  latitude: 39.1667,
+  longitude: 35.1667,
+  zoom: 6
 }
 
 export default function HomePage() {
@@ -38,16 +38,29 @@ export default function HomePage() {
   // Kullanıcı konumunu al
   useEffect(() => {
     if (navigator.geolocation) {
+      const options = {
+        enableHighAccuracy: true, // GPS kullanarak daha doğru konum al
+        timeout: 15000, // 15 saniye bekle
+        maximumAge: 300000 // Son 5 dakika içindeki konum önbelleğini kabul et
+      }
+      
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log('Ana sayfa - Gerçek konum alındı:', { 
+            lat: position.coords.latitude, 
+            lng: position.coords.longitude, 
+            accuracy: position.coords.accuracy 
+          })
+          
           setUserLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude
           })
         },
         (error) => {
-          console.log('Konum alınamadı:', error)
-        }
+          console.log('Ana sayfa - Konum alınamadı:', error)
+        },
+        options
       )
     }
   }, [])

@@ -11,6 +11,17 @@ import { ParkingLot } from '@/types/parking'
 import { formatDate, calculateOccupancyPercentage } from '@/lib/utils'
 import { seedDatabase, simulateOccupancyChanges } from '@/utils/seedData'
 import { Plus, Edit, Trash2, Car, Users, BarChart3, LogOut, Database } from 'lucide-react'
+import dynamic from 'next/dynamic'
+
+// FullPageLocationPicker'ı dinamik import et (SSR problemini önlemek için)
+const FullPageLocationPicker = dynamic(() => import('@/components/Map/FullPageLocationPicker'), {
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-50">
+      <div className="text-gray-500 text-xl">Harita yükleniyor...</div>
+    </div>
+  )
+})
 
 // Giriş formu bileşeni
 function LoginForm() {
@@ -101,36 +112,24 @@ function LoginForm() {
   )
 }
 
-// Form data tipi
-interface ParkingLotFormData {
-  name: string
-  address: string
-  latitude: string | number
-  longitude: string | number
-  totalSpaces: string | number
-  occupiedSpaces: string | number
-  hourlyRate: string | number
-  isActive: boolean
-}
-
 // Otopark ekleme/düzenleme formu
 function ParkingLotForm({ 
   lot, 
   onSave, 
   onCancel 
 }: { 
-  lot?: ParkingLot
+  lot?: ParkingLot | Partial<ParkingLot>
   onSave: (data: Partial<ParkingLot>) => void
   onCancel: () => void
 }) {
-  const [formData, setFormData] = useState<ParkingLotFormData>({
+  const [formData, setFormData] = useState({
     name: lot?.name || '',
     address: lot?.address || '',
-    latitude: lot?.latitude || '',
-    longitude: lot?.longitude || '',
-    totalSpaces: lot?.totalSpaces || '',
-    occupiedSpaces: lot?.occupiedSpaces || 0,
-    hourlyRate: lot?.hourlyRate || '',
+    latitude: lot?.latitude?.toString() || '',
+    longitude: lot?.longitude?.toString() || '',
+    totalSpaces: lot?.totalSpaces?.toString() || '',
+    occupiedSpaces: lot?.occupiedSpaces?.toString() || '0',
+    hourlyRate: lot?.hourlyRate?.toString() || '',
     isActive: lot?.isActive ?? true
   })
 
@@ -138,11 +137,11 @@ function ParkingLotForm({
     e.preventDefault()
     onSave({
       ...formData,
-      latitude: parseFloat(formData.latitude as string) || 0,
-      longitude: parseFloat(formData.longitude as string) || 0,
-      totalSpaces: parseInt(formData.totalSpaces as string) || 0,
-      occupiedSpaces: parseInt(formData.occupiedSpaces as string) || 0,
-      hourlyRate: parseFloat(formData.hourlyRate as string) || 0
+      latitude: parseFloat(formData.latitude) || 0,
+      longitude: parseFloat(formData.longitude) || 0,
+      totalSpaces: parseInt(formData.totalSpaces) || 0,
+      occupiedSpaces: parseInt(formData.occupiedSpaces) || 0,
+      hourlyRate: parseFloat(formData.hourlyRate) || 0
     })
   }
 
@@ -152,112 +151,130 @@ function ParkingLotForm({
         <CardTitle>{lot ? 'Otoparkı Düzenle' : 'Yeni Otopark Ekle'}</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Otopark Adı
+              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                <span className="text-blue-600">🏢</span>
+                <span>Otopark Adı</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
                 placeholder="Örn: Taksim Meydanı Otoparkı"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Toplam Park Yeri
+              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                <span className="text-green-600">🚗</span>
+                <span>Toplam Park Yeri Sayısı</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 min="1"
                 value={formData.totalSpaces}
                 onChange={(e) => setFormData({...formData, totalSpaces: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
                 placeholder="Örn: 150"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Şu An Dolu Park Yeri
+              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                <span className="text-orange-600">🅿️</span>
+                <span>Şu An Dolu Park Yeri</span>
               </label>
               <input
                 type="number"
                 min="0"
-                max={parseInt(formData.totalSpaces as string) || 999}
+                max={parseInt(formData.totalSpaces) || 999}
                 value={formData.occupiedSpaces}
                 onChange={(e) => setFormData({...formData, occupiedSpaces: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
                 placeholder="Örn: 75"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                🚗 Otoparka araba geldiğinde/gittiğinde bu sayıyı güncelleyin
+              <p className="text-sm text-gray-600 mt-2 bg-blue-50 p-2 rounded-md border border-blue-200">
+                💡 <strong>İpucu:</strong> Otoparka araç geldiğinde/gittiğinde bu sayıyı güncelleyin
               </p>
             </div>
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Adres
+              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                <span className="text-purple-600">📍</span>
+                <span>Otopark Adresi</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
                 placeholder="Örn: Taksim Meydanı, Beyoğlu/İstanbul"
                 required
               />
             </div>
-            <div className="md:col-span-2 bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <h4 className="font-medium text-blue-900 mb-2">🗺️ Google Maps&apos;ten Konum Nasıl Alınır?</h4>
-              <ol className="text-sm text-blue-800 space-y-1">
-                <li>1. Google Maps&apos;i açın (maps.google.com)</li>
-                <li>2. Otoparkın bulunduğu yeri bulun</li>
-                <li>3. Tam konuma <strong>sağ tıklayın</strong></li>
-                <li>4. Çıkan menüden koordinat numaralarına tıklayın</li>
-                <li>5. Virgülden önceki sayı = <strong>Enlem</strong>, virgülden sonraki = <strong>Boylam</strong></li>
-              </ol>
-            </div>
+            {formData.latitude && formData.longitude ? (
+              <div className="md:col-span-2 bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-300 shadow-sm">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-white text-lg">📍</span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-bold text-green-900 mb-1">✅ Konum Başarıyla Seçildi!</h4>
+                    <p className="text-base text-green-800 font-medium">
+                      📍 Enlem: {Number(formData.latitude).toFixed(6)} | 🌍 Boylam: {Number(formData.longitude).toFixed(6)}
+                    </p>
+                    <p className="text-sm text-green-700 mt-1">
+                      🎯 Otopark konumu haritada işaretlendi. Devam edebilirsiniz.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div>
+                  <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                    <span className="text-red-600">🌍</span>
+                    <span>Enlem (Latitude)</span>
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={formData.latitude}
+                    onChange={(e) => setFormData({...formData, latitude: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
+                    placeholder="Örn: 41.0369"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                    <span className="text-red-600">🌍</span>
+                    <span>Boylam (Longitude)</span>
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={formData.longitude}
+                    onChange={(e) => setFormData({...formData, longitude: e.target.value})}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
+                    placeholder="Örn: 28.9852"
+                    required
+                  />
+                </div>
+              </>
+            )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Harita Konumu - Enlem (Kuzey-Güney)
-              </label>
-              <input
-                type="number"
-                step="any"
-                value={formData.latitude}
-                onChange={(e) => setFormData({...formData, latitude: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Google Maps'ten alın (Örn: 41.0369)"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                📍 Google Maps&apos;te konuma sağ tıklayın, çıkan sayının ilki (virgülden önceki)
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Harita Konumu - Boylam (Doğu-Batı)
-              </label>
-              <input
-                type="number"
-                step="any"
-                value={formData.longitude}
-                onChange={(e) => setFormData({...formData, longitude: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Google Maps'ten alın (Örn: 28.9852)"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                📍 Google Maps&apos;te konuma sağ tıklayın, çıkan sayının ikincisi (virgülden sonraki)
-              </p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Saatlik Ücret (₺)
+              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
+                <span className="text-yellow-600">💰</span>
+                <span>Saatlik Ücret (₺)</span>
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -265,30 +282,31 @@ function ParkingLotForm({
                 step="0.01"
                 value={formData.hourlyRate}
                 onChange={(e) => setFormData({...formData, hourlyRate: e.target.value})}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
                 placeholder="Örn: 25.50"
                 required
               />
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center bg-gray-50 p-4 rounded-lg border border-gray-200">
               <input
                 type="checkbox"
                 id="isActive"
                 checked={formData.isActive}
                 onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
-                className="mr-2"
+                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 mr-3"
               />
-              <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
-                Aktif
+              <label htmlFor="isActive" className="text-base font-semibold text-gray-800 flex items-center space-x-2">
+                <span className="text-green-600">✅</span>
+                <span>Otopark Aktif (Kullanıma Açık)</span>
               </label>
             </div>
           </div>
-          <div className="flex gap-2 pt-4">
-            <Button type="submit">
-              {lot ? 'Güncelle' : 'Ekle'}
+          <div className="flex gap-4 pt-6 border-t border-gray-200">
+            <Button type="submit" className="flex-1 py-3 text-lg font-semibold">
+              {lot ? '✏️ Güncelle' : '➕ Ekle'}
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel}>
-              İptal
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1 py-3 text-lg font-semibold">
+              ❌ İptal
             </Button>
           </div>
         </form>
@@ -302,9 +320,11 @@ function AdminDashboard() {
   const { logout } = useAuth()
   const { parkingLots, loading, addParkingLot, updateParkingLot, deleteParkingLot } = useParkingLots()
   const { showError, showSuccess, toasts, removeToast } = useToast()
-  const [showForm, setShowForm] = useState(false)
   const [editingLot, setEditingLot] = useState<ParkingLot | null>(null)
   const [isSeeding, setIsSeeding] = useState(false)
+  const [showMapPicker, setShowMapPicker] = useState(false)
+  const [showNewForm, setShowNewForm] = useState(false)
+  const [newFormData, setNewFormData] = useState<Partial<ParkingLot>>({})
 
   useEffect(() => {
     // Gerçek zamanlı simülasyon başlat
@@ -316,14 +336,17 @@ function AdminDashboard() {
   const handleSave = async (data: Partial<ParkingLot>) => {
     try {
       if (editingLot) {
+        // Mevcut otopark düzenleme
         await updateParkingLot(editingLot.id, data)
         showSuccess('Otopark başarıyla güncellendi!')
+        setEditingLot(null)
       } else {
+        // Yeni otopark ekleme
         await addParkingLot(data as Omit<ParkingLot, 'id' | 'createdAt' | 'updatedAt'>)
         showSuccess('Yeni otopark başarıyla eklendi!')
+        setShowNewForm(false)
+        setNewFormData({})
       }
-      setShowForm(false)
-      setEditingLot(null)
     } catch (err) {
       console.error('Kaydetme hatası:', err)
       showError('Otopark kaydedilirken hata oluştu.')
@@ -511,13 +534,14 @@ function AdminDashboard() {
 
 
         {/* Form veya Otopark Listesi */}
-        {showForm || editingLot ? (
+        {(editingLot || showNewForm) ? (
           <ParkingLotForm
-            lot={editingLot || undefined}
+            lot={editingLot || newFormData}
             onSave={handleSave}
             onCancel={() => {
-              setShowForm(false)
               setEditingLot(null)
+              setShowNewForm(false)
+              setNewFormData({})
             }}
           />
         ) : (
@@ -530,13 +554,22 @@ function AdminDashboard() {
                   </div>
                   <span>🏢 Otoparklar</span>
                 </CardTitle>
-                <Button 
-                  onClick={() => setShowForm(true)}
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base"
-                >
-                  <Plus className="h-5 w-5 mr-2" />
-                  Yeni Otopark Ekle
-                </Button>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => setShowMapPicker(true)}
+                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base"
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    🗺️ Harita ile Ekle
+                  </Button>
+                  <Button 
+                    onClick={() => setShowNewForm(true)}
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base"
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    ✏️ Manuel Ekle
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="p-0">
@@ -728,6 +761,30 @@ function AdminDashboard() {
         )}
       </div>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
+      
+      {/* Tam Sayfa Harita Seçici */}
+      {showMapPicker && (
+        <FullPageLocationPicker
+          onLocationSelect={(location) => {
+            // Seçilen konumla form verilerini hazırla
+            const formData = {
+              name: location.name || '',
+              address: location.address,
+              latitude: location.lat,
+              longitude: location.lng,
+              totalSpaces: 100, // Varsayılan park yeri sayısını artırdım
+              occupiedSpaces: 0,
+              hourlyRate: 15, // Varsayılan ücreti düşürdüm
+              isActive: true
+            }
+            
+            setNewFormData(formData)
+            setShowMapPicker(false)
+            setShowNewForm(true)
+          }}
+          onCancel={() => setShowMapPicker(false)}
+        />
+      )}
     </div>
   )
 }
@@ -744,4 +801,4 @@ export default function AdminPage() {
   }
 
   return isAuthenticated ? <AdminDashboard /> : <LoginForm />
-} 
+}
