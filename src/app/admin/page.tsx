@@ -10,7 +10,7 @@ import { ToastContainer } from '@/components/ui/Toast'
 import { ParkingLot, ParkingStatus } from '@/types/parking'
 import { formatDate, calculateOccupancyPercentage } from '@/lib/utils'
 import { seedDatabase, simulateOccupancyChanges } from '@/utils/seedData'
-import { Plus, Edit, Trash2, Car, Users, BarChart3, LogOut, Database, Shield, ChevronDown } from 'lucide-react'
+import { Plus, Edit, Trash2, Car, Users, BarChart3, LogOut, Database, Shield, ChevronDown, Sun, Moon, Menu, X } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 // FullPageLocationPicker'ı dinamik import et (SSR problemini önlemek için)
@@ -32,8 +32,18 @@ function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(false)
   const { login } = useAuth()
   const { showError, toasts, removeToast } = useToast()
+
+  // Dark mode'u localStorage'dan yükle
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('darkMode')
+    if (savedDarkMode === 'true') {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark')
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,7 +57,11 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center relative overflow-hidden">
+    <div className={`min-h-screen flex items-center justify-center relative overflow-hidden transition-colors duration-300 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
+        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
+    }`}>
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -55,7 +69,11 @@ function LoginForm() {
         <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      <Card className="w-full max-w-md bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-2xl relative z-10">
+      <Card className={`w-full max-w-md backdrop-blur-lg border rounded-2xl shadow-2xl relative z-10 transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-gray-800/70 border-gray-700/50' 
+          : 'bg-white/70 border-white/50'
+      }`}>
         <CardHeader className="text-center">
           <div className="flex items-center justify-center mb-6">
             <div className="relative">
@@ -68,12 +86,16 @@ function LoginForm() {
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Admin Paneli
           </CardTitle>
-          <p className="text-gray-600 mt-2 font-medium">Güvenli giriş yapın</p>
+          <p className={`mt-2 font-medium transition-colors duration-300 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>Güvenli giriş yapın</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
+              <label htmlFor="email" className={`block text-sm font-bold mb-2 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-200' : 'text-gray-700'
+              }`}>
                 📧 Email Adresi
               </label>
               <input
@@ -81,13 +103,19 @@ function LoginForm() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 font-medium"
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 font-medium ${
+                  isDarkMode 
+                    ? 'bg-gray-700/80 border-gray-600/50 text-gray-100 placeholder-gray-400 focus:bg-gray-700' 
+                    : 'bg-white/80 border-white/50 text-gray-900 placeholder-gray-500 focus:bg-white'
+                }`}
                 placeholder="example@otopark.com"
                 required
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
+              <label htmlFor="password" className={`block text-sm font-bold mb-2 transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-200' : 'text-gray-700'
+              }`}>
                 🔒 Şifre
               </label>
               <input
@@ -95,7 +123,11 @@ function LoginForm() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 font-medium"
+                className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 font-medium ${
+                  isDarkMode 
+                    ? 'bg-gray-700/80 border-gray-600/50 text-gray-100 placeholder-gray-400 focus:bg-gray-700' 
+                    : 'bg-white/80 border-white/50 text-gray-900 placeholder-gray-500 focus:bg-white'
+                }`}
                 placeholder="••••••••"
                 required
               />
@@ -370,6 +402,28 @@ function AdminDashboard() {
   const [showMapPicker, setShowMapPicker] = useState(false)
   const [showNewForm, setShowNewForm] = useState(false)
   const [newFormData, setNewFormData] = useState<Partial<ParkingLot>>({})
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  // Dark mode'u localStorage'dan yükle
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('darkMode')
+    if (savedDarkMode === 'true') {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark')
+    }
+  }, [])
+
+  // Dark mode toggle
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode)
+    localStorage.setItem('darkMode', (!isDarkMode).toString())
+    if (!isDarkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  }
 
   useEffect(() => {
     // Gerçek zamanlı simülasyon başlat
@@ -484,7 +538,11 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+    <div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
+        : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'
+    }`}>
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
@@ -493,9 +551,13 @@ function AdminDashboard() {
       </div>
 
       {/* Admin Header */}
-      <header className="z-10 bg-white/80 backdrop-blur-lg border-b border-white/20 sticky top-0 shadow-lg">
-        <div className="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12">
-          <div className="flex justify-between items-center h-20">
+      <header className={`z-10 backdrop-blur-lg border-b sticky top-0 shadow-lg transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-gray-900/90 border-gray-700/50' 
+          : 'bg-white/80 border-white/20'
+      }`}>
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16 sm:h-20">
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-12 hover:rotate-0 transition-transform duration-300">
@@ -504,20 +566,76 @@ function AdminDashboard() {
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Admin Panel
                 </h1>
-                <p className="text-gray-600 text-sm font-medium">
+                <p className={`text-xs sm:text-sm font-medium transition-colors duration-300 ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
                   Otopark yönetimi ve istatistikler
                 </p>
               </div>
             </div>
-            <div className="flex items-center space-x-3">
+
+            {/* Mobile Controls */}
+            <div className="md:hidden flex items-center space-x-2">
+              <button
+                onClick={toggleDarkMode}
+                className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
+                  isDarkMode 
+                    ? 'bg-gray-800/50 hover:bg-gray-700/50' 
+                    : 'bg-white/50 hover:bg-white/70'
+                }`}
+                title={isDarkMode ? 'Aydınlık Tema' : 'Karanlık Tema'}
+              >
+                {isDarkMode ? (
+                  <Sun className="h-5 w-5 text-yellow-500" />
+                ) : (
+                  <Moon className="h-5 w-5 text-blue-600" />
+                )}
+              </button>
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
+                  isDarkMode 
+                    ? 'bg-gray-800/50 hover:bg-gray-700/50' 
+                    : 'bg-white/50 hover:bg-white/70'
+                }`}
+                title="Menü"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
+              </button>
+            </div>
+
+            <div className="hidden md:flex items-center space-x-3">
+              <button
+                onClick={toggleDarkMode}
+                className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
+                  isDarkMode 
+                    ? 'bg-gray-800/50 hover:bg-gray-700/50' 
+                    : 'bg-white/50 hover:bg-white/70'
+                }`}
+                title={isDarkMode ? 'Aydınlık Tema' : 'Karanlık Tema'}
+              >
+                {isDarkMode ? (
+                  <Sun className="h-5 w-5 text-yellow-500" />
+                ) : (
+                  <Moon className="h-5 w-5 text-blue-600" />
+                )}
+              </button>
               <Button 
                 variant="outline" 
                 onClick={handleSeedData}
                 disabled={isSeeding}
-                className="bg-white/70 backdrop-blur-sm border-2 border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold"
+                className={`backdrop-blur-sm border-2 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold ${
+                  isDarkMode 
+                    ? 'bg-gray-800/70 border-amber-600 text-amber-400 hover:bg-amber-900/50 hover:border-amber-500' 
+                    : 'bg-white/70 border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400'
+                }`}
               >
                 <Database className="h-4 w-4 mr-2" />
                 {isSeeding ? 'Ekleniyor...' : 'Demo Veriler'}
@@ -525,14 +643,22 @@ function AdminDashboard() {
               <Button 
                 variant="outline" 
                 onClick={() => window.location.href = '/'}
-                className="bg-white/70 backdrop-blur-sm border-2 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold"
+                className={`backdrop-blur-sm border-2 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold ${
+                  isDarkMode 
+                    ? 'bg-gray-800/70 border-blue-600 text-blue-400 hover:bg-blue-900/50 hover:border-blue-500' 
+                    : 'bg-white/70 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400'
+                }`}
               >
                 Ana Sayfa
               </Button>
               <Button 
                 variant="outline" 
                 onClick={logout}
-                className="bg-white/70 backdrop-blur-sm border-2 border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold"
+                className={`backdrop-blur-sm border-2 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold ${
+                  isDarkMode 
+                    ? 'bg-gray-800/70 border-red-600 text-red-400 hover:bg-red-900/50 hover:border-red-500' 
+                    : 'bg-white/70 border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400'
+                }`}
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Çıkış
