@@ -627,7 +627,7 @@ export default function HomePage() {
             </div>
 
             {/* Sidebar - Parking List */}
-            <div className="w-full lg:w-80 lg:flex-shrink-0">
+            <div className="w-full lg:w-96 lg:flex-shrink-0">
               <div className={`backdrop-blur-lg border-2 rounded-2xl h-[60vh] lg:h-full flex flex-col overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ${
                 isDarkMode 
                   ? 'bg-gray-800/70 border-gray-700/50' 
@@ -815,7 +815,7 @@ export default function HomePage() {
       } backdrop-blur-lg border-t`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Footer Content */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
             
             {/* Company Info */}
             <div className="space-y-3">
@@ -888,79 +888,6 @@ export default function HomePage() {
                   >
                     Anasayfa
                   </a>
-                </li>
-                <li>
-                  <a
-                    href="/admin"
-                    className={`text-xs sm:text-sm transition-colors duration-200 hover:text-blue-500 ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                    }`}
-                  >
-                    Admin Panel
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className={`text-xs sm:text-sm transition-colors duration-200 hover:text-blue-500 ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                    }`}
-                  >
-                    Hakkımızda
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className={`text-xs sm:text-sm transition-colors duration-200 hover:text-blue-500 ${
-                      isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                    }`}
-                  >
-                    İletişim
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Features */}
-            <div className="space-y-3">
-              <h4 className={`text-base font-semibold transition-colors duration-300 ${
-                isDarkMode ? 'text-gray-200' : 'text-gray-800'
-              }`}>
-                Özellikler
-              </h4>
-              <ul className="space-y-1.5">
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                  <span className={`text-xs sm:text-sm transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    Gerçek Zamanlı Takip
-                  </span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                  <span className={`text-xs sm:text-sm transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    Navigasyon Desteği
-                  </span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
-                  <span className={`text-xs sm:text-sm transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    Mesafe Hesaplama
-                  </span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
-                  <span className={`text-xs sm:text-sm transition-colors duration-300 ${
-                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    Akıllı Filtreleme
-                  </span>
                 </li>
               </ul>
             </div>
