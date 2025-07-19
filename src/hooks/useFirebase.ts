@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { database } from '@/lib/firebase';
 import { ref, onValue, push, set, update, remove, off } from 'firebase/database';
-import { ParkingLot, ParkingSpace } from '@/types/parking';
+import { ParkingLot, ParkingSpace, ParkingStatus } from '@/types/parking';
 
 export function useParkingLots() {
   const [parkingLots, setParkingLots] = useState<ParkingLot[]>([]);
@@ -45,11 +45,20 @@ export function useParkingLots() {
     try {
       const parkingLotsRef = ref(database, 'parkingLots');
       const newLotRef = push(parkingLotsRef);
-      await set(newLotRef, {
+      
+      // Varsayılan değerleri ayarla
+      const lotWithDefaults = {
         ...parkingLot,
+        status: parkingLot.status || ParkingStatus.AVAILABLE, // Eğer status belirtilmemişse 'available' yap
+        totalSpaces: parkingLot.totalSpaces || 0,
+        occupiedSpaces: parkingLot.occupiedSpaces || 0,
+        hourlyRate: parkingLot.hourlyRate || 0,
+        isActive: parkingLot.isActive !== undefined ? parkingLot.isActive : true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
-      });
+      };
+      
+      await set(newLotRef, lotWithDefaults);
       return newLotRef.key;
     } catch {
       throw new Error('Otopark eklenirken hata oluştu');

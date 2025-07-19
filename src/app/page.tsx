@@ -20,8 +20,10 @@ const getStatusStyle = (status: ParkingStatus, occupancy: number) => {
   switch (status) {
     case ParkingStatus.AVAILABLE:
       if (occupancy < 50) return { color: 'text-green-600', bg: 'bg-green-100', emoji: '🟢', text: 'Müsait', borderColor: 'border-green-300' }
-      if (occupancy < 80) return { color: 'text-yellow-600', bg: 'bg-yellow-100', emoji: '🟡', text: 'Dolmak Üzere', borderColor: 'border-yellow-300' }
+      if (occupancy < 80) return { color: 'text-yellow-600', bg: 'bg-yellow-100', emoji: '🟡', text: 'Az Yer', borderColor: 'border-yellow-300' }
       return { color: 'text-red-600', bg: 'bg-red-100', emoji: '🔴', text: 'Neredeyse Dolu', borderColor: 'border-red-300' }
+    case ParkingStatus.NEARLY_FULL:
+      return { color: 'text-orange-600', bg: 'bg-orange-100', emoji: '🟡', text: 'Az Yer', borderColor: 'border-orange-300' }
     case ParkingStatus.OCCUPIED:
       return { color: 'text-red-600', bg: 'bg-red-100', emoji: '🔴', text: 'Dolu', borderColor: 'border-red-300' }
     case ParkingStatus.MAINTENANCE:
@@ -198,6 +200,7 @@ export default function HomePage() {
   const stats = {
     total: parkingLots.length,
     available: parkingLots.filter(lot => lot.status === ParkingStatus.AVAILABLE).length,
+    nearlyFull: parkingLots.filter(lot => lot.status === ParkingStatus.NEARLY_FULL).length,
     occupied: parkingLots.filter(lot => lot.status === ParkingStatus.OCCUPIED).length,
     maintenance: parkingLots.filter(lot => lot.status === ParkingStatus.MAINTENANCE).length,
     closed: parkingLots.filter(lot => lot.status === ParkingStatus.CLOSED).length,
@@ -377,7 +380,7 @@ export default function HomePage() {
           </div>
 
           {/* İstatistikler */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 mb-8 animate-fade-in-up animation-delay-300">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-3 sm:gap-4 mb-8 animate-fade-in-up animation-delay-300">
             <div className={`p-3 sm:p-4 text-center rounded-2xl shadow-xl transition-colors duration-300 ${
               isDarkMode ? 'bg-gray-800/70 backdrop-blur-lg border border-gray-700/50' : 'bg-white/70 backdrop-blur-lg border border-white/50'
             }`}>
@@ -393,6 +396,14 @@ export default function HomePage() {
               <div className={`text-xs sm:text-sm transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-300' : 'text-gray-600'
               }`}>Müsait</div>
+            </div>
+            <div className={`p-3 sm:p-4 text-center rounded-2xl shadow-xl transition-colors duration-300 ${
+              isDarkMode ? 'bg-gray-800/70 backdrop-blur-lg border border-gray-700/50' : 'bg-white/70 backdrop-blur-lg border border-white/50'
+            }`}>
+              <div className="text-xl sm:text-2xl font-bold text-orange-600">{stats.nearlyFull}</div>
+              <div className={`text-xs sm:text-sm transition-colors duration-300 ${
+                isDarkMode ? 'text-gray-300' : 'text-gray-600'
+              }`}>Az Yer</div>
             </div>
             <div className={`p-3 sm:p-4 text-center rounded-2xl shadow-xl transition-colors duration-300 ${
               isDarkMode ? 'bg-gray-800/70 backdrop-blur-lg border border-gray-700/50' : 'bg-white/70 backdrop-blur-lg border border-white/50'
@@ -483,6 +494,20 @@ export default function HomePage() {
                   }`}
                 >
                   🟢 Müsait ({stats.available})
+                </Button>
+                <Button
+                  variant={statusFilter === ParkingStatus.NEARLY_FULL ? 'primary' : 'outline'}
+                  onClick={() => setStatusFilter(ParkingStatus.NEARLY_FULL)}
+                  size="sm"
+                  className={`border-2 rounded-lg transition-all duration-300 ${
+                    statusFilter === ParkingStatus.NEARLY_FULL 
+                      ? 'bg-orange-500 text-white border-orange-500' 
+                      : isDarkMode 
+                        ? 'bg-gray-700/90 text-gray-200 border-gray-600 hover:bg-gray-600' 
+                        : 'bg-white/90 text-gray-700 border-gray-300 hover:bg-white'
+                  }`}
+                >
+                  🟡 Az Yer ({stats.nearlyFull})
                 </Button>
                 <Button
                   variant={statusFilter === ParkingStatus.OCCUPIED ? 'primary' : 'outline'}
@@ -744,6 +769,18 @@ export default function HomePage() {
                                       <span className="font-bold text-blue-700">{lot.hourlyRate}₺</span>
                                     </div>
                                   )}
+                                  {lot.status === ParkingStatus.NEARLY_FULL && (
+                                    <div className="flex items-center bg-orange-100 px-2 py-1 rounded-full">
+                                      <Car className="h-3 w-3 mr-1 text-orange-600" />
+                                      <span className="font-bold text-orange-700">{lot.totalSpaces - lot.occupiedSpaces}</span>
+                                    </div>
+                                  )}
+                                  {lot.status === ParkingStatus.NEARLY_FULL && (
+                                    <div className="flex items-center bg-blue-100 px-2 py-1 rounded-full">
+                                      <Clock className="h-3 w-3 mr-1 text-blue-600" />
+                                      <span className="font-bold text-blue-700">{lot.hourlyRate}₺</span>
+                                    </div>
+                                  )}
                                   {lot.status === ParkingStatus.OCCUPIED && (
                                     <div className="flex items-center bg-red-100 px-2 py-1 rounded-full">
                                       <X className="h-3 w-3 mr-1 text-red-600" />
@@ -961,7 +998,7 @@ export default function HomePage() {
                 <span className={`transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'
                 }`}>
-                  © 2024 Otopark Takip. Tüm hakları saklıdır.
+                  © 2025 Otopark Takip. Tüm hakları saklıdır.
                 </span>
               </div>
               <div className="flex items-center space-x-1 text-xs sm:text-sm">
@@ -1025,18 +1062,28 @@ export default function HomePage() {
                 }`}>📍 {selectedLot.address}</p>
                             </div>
                             
-              {selectedLot.status === ParkingStatus.AVAILABLE && (
+              {(selectedLot.status === ParkingStatus.AVAILABLE || selectedLot.status === ParkingStatus.NEARLY_FULL) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 sm:p-6 rounded-2xl border-2 border-green-200 hover:scale-105 transition-transform duration-200">
+                  <div className={`bg-gradient-to-br p-4 sm:p-6 rounded-2xl border-2 hover:scale-105 transition-transform duration-200 ${
+                    selectedLot.status === ParkingStatus.AVAILABLE 
+                      ? 'from-green-50 to-green-100 border-green-200' 
+                      : 'from-orange-50 to-orange-100 border-orange-200'
+                  }`}>
                     <div className="flex items-center space-x-3 mb-2">
-                      <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                        selectedLot.status === ParkingStatus.AVAILABLE ? 'bg-green-500' : 'bg-orange-500'
+                      }`}>
                         <Car className="h-5 w-5 text-white" />
                                 </div>
                                 <div>
-                        <div className="text-2xl sm:text-3xl font-bold text-green-600">
+                        <div className={`text-2xl sm:text-3xl font-bold ${
+                          selectedLot.status === ParkingStatus.AVAILABLE ? 'text-green-600' : 'text-orange-600'
+                        }`}>
                           {selectedLot.totalSpaces - selectedLot.occupiedSpaces}
                         </div>
-                        <div className="text-xs sm:text-sm font-medium text-green-700">Boş Yer</div>
+                        <div className={`text-xs sm:text-sm font-medium ${
+                          selectedLot.status === ParkingStatus.AVAILABLE ? 'text-green-700' : 'text-orange-700'
+                        }`}>Boş Yer</div>
                       </div>
                                 </div>
                               </div>
@@ -1056,7 +1103,7 @@ export default function HomePage() {
                           </div>
                         )}
                         
-              {selectedLot.status === ParkingStatus.AVAILABLE && (
+              {(selectedLot.status === ParkingStatus.AVAILABLE || selectedLot.status === ParkingStatus.NEARLY_FULL) && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-3 sm:p-4 rounded-xl border border-purple-200">
                     <div className="text-xl font-bold text-purple-600">
@@ -1073,7 +1120,7 @@ export default function HomePage() {
                 </div>
               )}
 
-              {selectedLot.status !== ParkingStatus.AVAILABLE && (
+              {(selectedLot.status !== ParkingStatus.AVAILABLE && selectedLot.status !== ParkingStatus.NEARLY_FULL) && (
                 <div className={`backdrop-blur-sm p-6 rounded-2xl border-2 text-center shadow-lg transition-colors duration-300 ${
                   isDarkMode 
                     ? 'bg-gradient-to-br from-gray-700/80 to-gray-800/80 border-gray-600/60' 

@@ -9,8 +9,8 @@ import Button from '@/components/ui/Button'
 import { ToastContainer } from '@/components/ui/Toast'
 import { ParkingLot, ParkingStatus } from '@/types/parking'
 import { formatDate, calculateOccupancyPercentage } from '@/lib/utils'
-import { seedDatabase, simulateOccupancyChanges } from '@/utils/seedData'
-import { Plus, Edit, Trash2, Car, Users, BarChart3, LogOut, Database, Shield, ChevronDown, Sun, Moon, Menu, X } from 'lucide-react'
+import { seedDatabase } from '@/utils/seedData'
+import { Plus, Edit, Trash2, Car, Users, BarChart3, LogOut, Database, Shield, ChevronDown, Sun, Moon } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 // FullPageLocationPicker'ı dinamik import et (SSR problemini önlemek için)
@@ -198,10 +198,34 @@ function ParkingLotForm({
     latitude: lot?.latitude?.toString() || '',
     longitude: lot?.longitude?.toString() || '',
     totalSpaces: lot?.totalSpaces?.toString() || '',
-    occupiedSpaces: lot?.occupiedSpaces?.toString() || '0',
+    occupiedSpaces: lot?.occupiedSpaces?.toString() || '',
     hourlyRate: lot?.hourlyRate?.toString() || '',
-    isActive: lot?.isActive ?? true
+    isActive: lot?.isActive ?? true,
+    status: lot?.status || ParkingStatus.AVAILABLE
   })
+
+  // Doluluk oranına göre durumu otomatik güncelle
+  useEffect(() => {
+    const total = parseInt(formData.totalSpaces) || 0
+    const occupied = parseInt(formData.occupiedSpaces) || 0
+    
+    if (total > 0) {
+      const occupancyPercentage = (occupied / total) * 100
+      
+      let newStatus: ParkingStatus
+      if (occupancyPercentage >= 100) {
+        newStatus = ParkingStatus.OCCUPIED  // %100 dolu
+      } else if (occupancyPercentage >= 50) {
+        newStatus = ParkingStatus.NEARLY_FULL  // %50-99 az yer
+      } else {
+        newStatus = ParkingStatus.AVAILABLE  // %0-49 müsait
+      }
+      
+      if (formData.status !== newStatus) {
+        setFormData(prev => ({ ...prev, status: newStatus }))
+      }
+    }
+  }, [formData.totalSpaces, formData.occupiedSpaces, formData.status])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -211,7 +235,8 @@ function ParkingLotForm({
       longitude: parseFloat(formData.longitude) || 0,
       totalSpaces: parseInt(formData.totalSpaces) || 0,
       occupiedSpaces: parseInt(formData.occupiedSpaces) || 0,
-      hourlyRate: parseFloat(formData.hourlyRate) || 0
+      hourlyRate: parseFloat(formData.hourlyRate) || 0,
+      status: formData.status
     })
   }
 
@@ -364,7 +389,30 @@ function ParkingLotForm({
             </div>
               </>
             )}
-            <div className="md:col-span-2 flex items-center bg-gradient-to-r from-gray-100 to-gray-200 p-6 rounded-2xl border-2 border-gray-300 shadow-sm">
+            <div>
+              <label className="text-base font-bold text-gray-800 mb-3 flex items-center space-x-2">
+                <span className="text-2xl">📊</span>
+                <span>Durum</span>
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value as ParkingStatus})}
+                className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900"
+              >
+                <option value={ParkingStatus.AVAILABLE}>🟢 Müsait</option>
+                <option value={ParkingStatus.NEARLY_FULL}>🟡 Az Yer</option>
+                <option value={ParkingStatus.OCCUPIED}>🔴 Dolu</option>
+                <option value={ParkingStatus.MAINTENANCE}>🔧 Bakımda</option>
+                <option value={ParkingStatus.CLOSED}>🚫 Kapalı</option>
+                <option value={ParkingStatus.RESERVED}>🅿️ Rezerve</option>
+              </select>
+              <div className="mt-2 p-3 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl border border-blue-200">
+                <p className="text-sm text-blue-800 font-medium">
+                  💡 <strong>Otomatik:</strong> Doluluk oranına göre durum otomatik güncellenir (Manuel değiştirebilirsiniz)
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center bg-gradient-to-r from-gray-100 to-gray-200 p-6 rounded-2xl border-2 border-gray-300 shadow-sm">
               <input
                 type="checkbox"
                 id="isActive"
@@ -403,7 +451,7 @@ function AdminDashboard() {
   const [showNewForm, setShowNewForm] = useState(false)
   const [newFormData, setNewFormData] = useState<Partial<ParkingLot>>({})
   const [isDarkMode, setIsDarkMode] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
 
   // Dark mode'u localStorage'dan yükle
   useEffect(() => {
@@ -425,12 +473,7 @@ function AdminDashboard() {
     }
   }
 
-  useEffect(() => {
-    // Gerçek zamanlı simülasyon başlat
-    if (parkingLots.length > 0) {
-      simulateOccupancyChanges()
-    }
-  }, [parkingLots.length])
+
 
   const handleSave = async (data: Partial<ParkingLot>) => {
     try {
@@ -466,9 +509,24 @@ function AdminDashboard() {
   const handleQuickOccupancyUpdate = async (lot: ParkingLot, change: number) => {
     const newOccupiedSpaces = Math.max(0, Math.min(lot.totalSpaces, lot.occupiedSpaces + change))
     
+    // Doluluk oranına göre durumu otomatik güncelle
+    const occupancyPercentage = (newOccupiedSpaces / lot.totalSpaces) * 100
+    let newStatus: ParkingStatus
+    
+    if (occupancyPercentage >= 100) {
+      newStatus = ParkingStatus.OCCUPIED  // %100 dolu
+    } else if (occupancyPercentage >= 50) {
+      newStatus = ParkingStatus.NEARLY_FULL  // %50-99 az yer
+    } else {
+      newStatus = ParkingStatus.AVAILABLE  // %0-49 müsait
+    }
+    
     try {
-      await updateParkingLot(lot.id, { occupiedSpaces: newOccupiedSpaces })
-      showSuccess(`${lot.name} doluluk güncellendi: ${newOccupiedSpaces}/${lot.totalSpaces}`)
+      await updateParkingLot(lot.id, { 
+        occupiedSpaces: newOccupiedSpaces,
+        status: newStatus
+      })
+      showSuccess(`${lot.name} güncellendi: ${newOccupiedSpaces}/${lot.totalSpaces} (${getStatusText(newStatus)})`)
     } catch {
       showError('Doluluk güncellenirken hata oluştu.')
     }
@@ -488,6 +546,7 @@ function AdminDashboard() {
   const getStatusText = (status: ParkingStatus) => {
     switch (status) {
       case ParkingStatus.AVAILABLE: return 'Müsait'
+      case ParkingStatus.NEARLY_FULL: return 'Az Yer'
       case ParkingStatus.OCCUPIED: return 'Dolu'
       case ParkingStatus.MAINTENANCE: return 'Bakımda'
       case ParkingStatus.CLOSED: return 'Kapalı'
@@ -556,7 +615,7 @@ function AdminDashboard() {
           ? 'bg-gray-900/90 border-gray-700/50' 
           : 'bg-white/80 border-white/20'
       }`}>
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 sm:h-20">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -592,21 +651,6 @@ function AdminDashboard() {
                   <Sun className="h-5 w-5 text-yellow-500" />
                 ) : (
                   <Moon className="h-5 w-5 text-blue-600" />
-                )}
-              </button>
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className={`p-2 rounded-lg transition-all duration-200 hover:scale-110 ${
-                  isDarkMode 
-                    ? 'bg-gray-800/50 hover:bg-gray-700/50' 
-                    : 'bg-white/50 hover:bg-white/70'
-                }`}
-                title="Menü"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
                 )}
               </button>
             </div>
@@ -668,7 +712,7 @@ function AdminDashboard() {
         </div>
       </header>
 
-      <div className="relative z-10 max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12 py-8">
+      <div className="relative z-10 max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Modern İstatistikler */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in-up">
@@ -783,22 +827,22 @@ function AdminDashboard() {
                 <table className="w-full min-w-full table-auto">
                   <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                     <tr>
-                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <th className="px-6 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         🏢 Otopark
                       </th>
-                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <th className="px-6 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         🚗 Doluluk & Güncelleme
                       </th>
-                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <th className="px-6 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         💰 Ücret
                       </th>
-                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <th className="px-6 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         📊 Durum
                       </th>
-                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <th className="px-6 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         🕒 Güncelleme
                       </th>
-                      <th className="px-8 py-5 text-right text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                      <th className="px-6 py-5 text-right text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         ⚡ İşlemler
                       </th>
                     </tr>
@@ -808,7 +852,7 @@ function AdminDashboard() {
                       const occupancyPercentage = calculateOccupancyPercentage(lot.occupiedSpaces, lot.totalSpaces)
                       return (
                         <tr key={lot.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
-                          <td className="px-8 py-6 align-top">
+                          <td className="px-6 py-6 align-top">
                             <div className="flex items-center space-x-4">
                               <div className="flex-shrink-0">
                                 <div className="w-12 h-12 bg-indigo-500 dark:bg-indigo-600 rounded-lg flex items-center justify-center">
@@ -821,7 +865,7 @@ function AdminDashboard() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-8 py-6 align-top">
+                          <td className="px-6 py-6 align-top">
                             <div className="mb-3">
                               <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
                                 {lot.occupiedSpaces}/{lot.totalSpaces} (%{occupancyPercentage})
@@ -910,7 +954,7 @@ function AdminDashboard() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-8 py-6 align-top">
+                          <td className="px-6 py-6 align-top">
                             <div className="flex items-center space-x-3">
                               <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
                                 <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-base">₺</span>
@@ -920,7 +964,7 @@ function AdminDashboard() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-8 py-6 align-top">
+                          <td className="px-6 py-6 align-top">
                             <div className="relative group">
                               <button
                                 className={`
@@ -958,12 +1002,12 @@ function AdminDashboard() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-8 py-6 align-top">
+                          <td className="px-6 py-6 align-top">
                             <div className="text-sm text-slate-500 dark:text-slate-400">
                               {formatDate(lot.updatedAt)}
                             </div>
                           </td>
-                          <td className="px-8 py-6 text-right align-top">
+                          <td className="px-6 py-6 text-right align-top">
                             <div className="flex items-center justify-end gap-3">
                               <button
                                 onClick={() => setEditingLot(lot)}

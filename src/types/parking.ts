@@ -15,6 +15,7 @@ export interface ParkingLot {
 
 export enum ParkingStatus {
   AVAILABLE = 'available',    // Müsait
+  NEARLY_FULL = 'nearly_full', // Dolmak Üzere
   OCCUPIED = 'occupied',      // Dolu
   MAINTENANCE = 'maintenance', // Bakım
   CLOSED = 'closed',          // Kapalı

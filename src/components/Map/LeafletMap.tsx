@@ -29,8 +29,10 @@ const getStatusStyle = (status: ParkingStatus, occupancy: number) => {
   switch (status) {
     case ParkingStatus.AVAILABLE:
       if (occupancy < 50) return { color: '#10b981', bg: '#d1fae5', emoji: '🟢', text: 'Müsait' }
-      if (occupancy < 80) return { color: '#f59e0b', bg: '#fef3c7', emoji: '🟡', text: 'Dolmak Üzere' }
+      if (occupancy < 80) return { color: '#f97316', bg: '#fed7aa', emoji: '🟡', text: 'Az Yer' }
       return { color: '#ef4444', bg: '#fee2e2', emoji: '🔴', text: 'Neredeyse Dolu' }
+    case ParkingStatus.NEARLY_FULL:
+      return { color: '#f97316', bg: '#fed7aa', emoji: '🟡', text: 'Az Yer' }
     case ParkingStatus.OCCUPIED:
       return { color: '#ef4444', bg: '#fee2e2', emoji: '🔴', text: 'Dolu' }
     case ParkingStatus.MAINTENANCE:
@@ -235,7 +237,7 @@ export default function LeafletMap({
                 font-weight: bold;
                   color: ${statusStyle.color};
                 ">
-                  ${lot.status === ParkingStatus.AVAILABLE ? (lot.totalSpaces - lot.occupiedSpaces) : 
+                  ${lot.status === ParkingStatus.AVAILABLE || lot.status === ParkingStatus.NEARLY_FULL ? (lot.totalSpaces - lot.occupiedSpaces) : 
                     lot.status === ParkingStatus.OCCUPIED ? '!' : 
                     lot.status === ParkingStatus.MAINTENANCE ? '🔧' : 
                     lot.status === ParkingStatus.CLOSED ? '❌' : '🅿️'}
@@ -294,7 +296,7 @@ export default function LeafletMap({
                     ${statusStyle.text}
                   </span>
                   
-                  ${lot.status === ParkingStatus.AVAILABLE ? 
+                  ${lot.status === ParkingStatus.AVAILABLE || lot.status === ParkingStatus.NEARLY_FULL ? 
                     `<span>💰 ${lot.hourlyRate}₺/saat</span>` : 
                     lot.status === ParkingStatus.OCCUPIED ? 
                     `<span>🚫 Dolu</span>` : 
@@ -370,7 +372,7 @@ export default function LeafletMap({
               ${statusStyle.emoji} ${statusStyle.text}
             </div>
             
-            ${lot.status === ParkingStatus.AVAILABLE ? `
+            ${lot.status === ParkingStatus.AVAILABLE || lot.status === ParkingStatus.NEARLY_FULL ? `
               <div style="display: flex; justify-content: space-between; font-size: 14px;">
                 <span><strong>Boş:</strong> ${lot.totalSpaces - lot.occupiedSpaces}/${lot.totalSpaces}</span>
                 <span><strong>Doluluk:</strong> %${occupancyPercentage}</span>
