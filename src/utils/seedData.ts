@@ -13,6 +13,7 @@ export const demoData = {
       occupiedSpaces: 120,
       hourlyRate: 25,
       isActive: true,
+      status: 'occupied',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -25,6 +26,7 @@ export const demoData = {
       occupiedSpaces: 45,
       hourlyRate: 20,
       isActive: true,
+      status: 'available',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -37,6 +39,7 @@ export const demoData = {
       occupiedSpaces: 75,
       hourlyRate: 30,
       isActive: true,
+      status: 'occupied',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -49,6 +52,7 @@ export const demoData = {
       occupiedSpaces: 30,
       hourlyRate: 22,
       isActive: true,
+      status: 'available',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -60,7 +64,8 @@ export const demoData = {
       totalSpaces: 300,
       occupiedSpaces: 180,
       hourlyRate: 35,
-      isActive: true,
+      isActive: false,
+      status: 'maintenance',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -73,6 +78,85 @@ export const demoData = {
       occupiedSpaces: 425,
       hourlyRate: 15,
       isActive: true,
+      status: 'occupied',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    'parking-7': {
+      name: 'Üsküdar Merkez Otoparkı',
+      address: 'Üsküdar Merkez, Üsküdar/İstanbul',
+      latitude: 41.0276,
+      longitude: 29.0194,
+      totalSpaces: 100,
+      occupiedSpaces: 0,
+      hourlyRate: 18,
+      isActive: false,
+      status: 'closed',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    'parking-8': {
+      name: 'Bakırköy Sahil Otoparkı',
+      address: 'Bakırköy Sahil, Bakırköy/İstanbul',
+      latitude: 40.9723,
+      longitude: 28.8732,
+      totalSpaces: 150,
+      occupiedSpaces: 120,
+      hourlyRate: 20,
+      isActive: true,
+      status: 'reserved',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    'parking-9': {
+      name: 'Maslak Business Otoparkı',
+      address: 'Maslak, Şişli/İstanbul',
+      latitude: 41.1067,
+      longitude: 29.0222,
+      totalSpaces: 250,
+      occupiedSpaces: 80,
+      hourlyRate: 40,
+      isActive: true,
+      status: 'available',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    'parking-10': {
+      name: 'Galata Tower Otoparkı',
+      address: 'Galata, Beyoğlu/İstanbul',
+      latitude: 41.0256,
+      longitude: 28.9741,
+      totalSpaces: 90,
+      occupiedSpaces: 40,
+      hourlyRate: 35,
+      isActive: true,
+      status: 'available',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    'parking-11': {
+      name: 'Ortaköy Mecidiye Otoparkı',
+      address: 'Ortaköy, Beşiktaş/İstanbul',
+      latitude: 41.0553,
+      longitude: 29.0264,
+      totalSpaces: 120,
+      occupiedSpaces: 45,
+      hourlyRate: 30,
+      isActive: true,
+      status: 'available',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    'parking-12': {
+      name: 'Pendik Marina Otoparkı',
+      address: 'Pendik Marina, Pendik/İstanbul',
+      latitude: 40.8743,
+      longitude: 29.2333,
+      totalSpaces: 180,
+      occupiedSpaces: 160,
+      hourlyRate: 25,
+      isActive: false,
+      status: 'maintenance',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
@@ -83,7 +167,13 @@ export const demoData = {
     'parking-3': generateParkingSpaces('parking-3', 80, 75),
     'parking-4': generateParkingSpaces('parking-4', 120, 30),
     'parking-5': generateParkingSpaces('parking-5', 300, 180),
-    'parking-6': generateParkingSpaces('parking-6', 500, 425)
+    'parking-6': generateParkingSpaces('parking-6', 500, 425),
+    'parking-7': generateParkingSpaces('parking-7', 100, 0),
+    'parking-8': generateParkingSpaces('parking-8', 150, 120),
+    'parking-9': generateParkingSpaces('parking-9', 250, 80),
+    'parking-10': generateParkingSpaces('parking-10', 90, 40),
+    'parking-11': generateParkingSpaces('parking-11', 120, 45),
+    'parking-12': generateParkingSpaces('parking-12', 180, 160)
   }
 }
 

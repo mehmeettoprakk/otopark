@@ -8,8 +8,17 @@ export interface ParkingLot {
   occupiedSpaces: number;
   hourlyRate: number;
   isActive: boolean;
+  status: ParkingStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+export enum ParkingStatus {
+  AVAILABLE = 'available',    // Müsait
+  OCCUPIED = 'occupied',      // Dolu
+  MAINTENANCE = 'maintenance', // Bakım
+  CLOSED = 'closed',          // Kapalı
+  RESERVED = 'reserved'       // Rezerve
 }
 
 export interface ParkingSpace {

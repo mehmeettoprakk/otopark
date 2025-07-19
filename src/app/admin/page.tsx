@@ -7,18 +7,22 @@ import { useToast } from '@/hooks/useToast'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { ToastContainer } from '@/components/ui/Toast'
-import { ParkingLot } from '@/types/parking'
+import { ParkingLot, ParkingStatus } from '@/types/parking'
 import { formatDate, calculateOccupancyPercentage } from '@/lib/utils'
 import { seedDatabase, simulateOccupancyChanges } from '@/utils/seedData'
-import { Plus, Edit, Trash2, Car, Users, BarChart3, LogOut, Database } from 'lucide-react'
+import { Plus, Edit, Trash2, Car, Users, BarChart3, LogOut, Database, Shield, ChevronDown } from 'lucide-react'
 import dynamic from 'next/dynamic'
 
 // FullPageLocationPicker'ı dinamik import et (SSR problemini önlemek için)
 const FullPageLocationPicker = dynamic(() => import('@/components/Map/FullPageLocationPicker'), {
   ssr: false,
   loading: () => (
-    <div className="fixed inset-0 bg-gray-100 animate-pulse flex items-center justify-center z-50">
-      <div className="text-gray-500 text-xl">Harita yükleniyor...</div>
+    <div className="fixed inset-0 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 animate-pulse flex items-center justify-center z-50">
+      <div className="relative z-10 text-center">
+        <div className="mb-4 text-4xl animate-bounce">🗺️</div>
+        <div className="text-gray-700 font-semibold text-lg">Harita yükleniyor...</div>
+        <div className="text-gray-500 text-sm mt-2">Lütfen bekleyin</div>
+      </div>
     </div>
   )
 })
@@ -43,41 +47,55 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen gradient-bg flex items-center justify-center">
-      <Card className="w-full max-w-md glass">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <Card className="w-full max-w-md bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-2xl relative z-10">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Users className="h-8 w-8 text-white" />
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-12 hover:rotate-0 transition-transform duration-300">
+                <Shield className="h-10 w-10 text-white" />
+              </div>
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
+            </div>
           </div>
-          <CardTitle className="text-2xl font-bold text-white">Admin Paneli</CardTitle>
-          <p className="text-white/70 mt-2">Güvenli giriş yapın</p>
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Admin Paneli
+          </CardTitle>
+          <p className="text-gray-600 mt-2 font-medium">Güvenli giriş yapın</p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-                Email Adresi
+              <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
+                📧 Email Adresi
               </label>
               <input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 font-medium"
                 placeholder="example@otopark.com"
                 required
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
-                Şifre
+              <label htmlFor="password" className="block text-sm font-bold text-gray-700 mb-2">
+                🔒 Şifre
               </label>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 font-medium"
                 placeholder="••••••••"
                 required
               />
@@ -85,22 +103,23 @@ function LoginForm() {
 
             <Button 
               type="submit" 
-              className="w-full"
+              className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-lg"
               disabled={loading}
             >
-              {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+              {loading ? '🔄 Giriş yapılıyor...' : '🚀 Giriş Yap'}
             </Button>
           </form>
-          <div className="mt-6 p-4 bg-amber-500/20 border border-amber-400/30 rounded-xl backdrop-blur-sm">
+          <div className="mt-6 p-4 bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 rounded-xl">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
-                <div className="w-6 h-6 bg-amber-400 rounded-full flex items-center justify-center">
-                  <span className="text-amber-900 text-xs font-bold">🔒</span>
+                <div className="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center">
+                  <span className="text-white text-xs font-bold">🔒</span>
                 </div>
               </div>
               <div>
-                <h4 className="text-amber-100 font-semibold text-sm mb-1"> Lütfen Firebase Authentication konsolundan giriş yapınız.</h4>
-                <p className="text-amber-200 text-xs leading-relaxed">
+                <h4 className="text-amber-800 font-semibold text-sm mb-1">Firebase Authentication</h4>
+                <p className="text-amber-700 text-xs leading-relaxed">
+                  Lütfen Firebase konsolundan giriş yapınız.
                 </p>
               </div>
             </div>
@@ -108,6 +127,25 @@ function LoginForm() {
         </CardContent>
       </Card>
       <ToastContainer toasts={toasts} onRemove={removeToast} />
+      
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </div>
   )
 }
@@ -146,16 +184,21 @@ function ParkingLotForm({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{lot ? 'Otoparkı Düzenle' : 'Yeni Otopark Ekle'}</CardTitle>
+    <Card className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
+      <CardHeader className="bg-gradient-to-r from-blue-100 to-purple-100 border-b border-white/20 px-8 py-6">
+        <CardTitle className="text-2xl font-bold text-gray-900 flex items-center space-x-4">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <Car className="h-6 w-6 text-white" />
+          </div>
+          <span>{lot ? '✏️ Otoparkı Düzenle' : '➕ Yeni Otopark Ekle'}</span>
+        </CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <CardContent className="p-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                <span className="text-blue-600">🏢</span>
+              <label className="text-base font-bold text-gray-800 mb-3 flex items-center space-x-2">
+                <span className="text-2xl">🏢</span>
                 <span>Otopark Adı</span>
                 <span className="text-red-500">*</span>
               </label>
@@ -163,14 +206,14 @@ function ParkingLotForm({
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
+                className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900 placeholder-gray-500"
                 placeholder="Örn: Taksim Meydanı Otoparkı"
                 required
               />
             </div>
             <div>
-              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                <span className="text-green-600">🚗</span>
+              <label className="block text-base font-bold text-gray-800 mb-3 items-center space-x-2">
+                <span className="text-2xl">🚗</span>
                 <span>Toplam Park Yeri Sayısı</span>
                 <span className="text-red-500">*</span>
               </label>
@@ -179,14 +222,14 @@ function ParkingLotForm({
                 min="1"
                 value={formData.totalSpaces}
                 onChange={(e) => setFormData({...formData, totalSpaces: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
+                className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900 placeholder-gray-500"
                 placeholder="Örn: 150"
                 required
               />
             </div>
             <div>
-              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                <span className="text-orange-600">🅿️</span>
+              <label className="text-base font-bold text-gray-800 mb-3 flex items-center space-x-2">
+                <span className="text-2xl">🅿️</span>
                 <span>Şu An Dolu Park Yeri</span>
               </label>
               <input
@@ -195,16 +238,35 @@ function ParkingLotForm({
                 max={parseInt(formData.totalSpaces) || 999}
                 value={formData.occupiedSpaces}
                 onChange={(e) => setFormData({...formData, occupiedSpaces: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
+                className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900 placeholder-gray-500"
                 placeholder="Örn: 75"
               />
-              <p className="text-sm text-gray-600 mt-2 bg-blue-50 p-2 rounded-md border border-blue-200">
-                💡 <strong>İpucu:</strong> Otoparka araç geldiğinde/gittiğinde bu sayıyı güncelleyin
-              </p>
+              <div className="mt-3 p-3 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl border border-blue-200">
+                <p className="text-sm text-blue-800 font-medium">
+                  💡 <strong>İpucu:</strong> Otoparka araç geldiğinde/gittiğinde bu sayıyı güncelleyin
+                </p>
+              </div>
+            </div>
+            <div>
+              <label className="block text-base font-bold text-gray-800 mb-3 items-center space-x-2">
+                <span className="text-2xl">💰</span>
+                <span>Saatlik Ücret (₺)</span>
+                <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={formData.hourlyRate}
+                onChange={(e) => setFormData({...formData, hourlyRate: e.target.value})}
+                className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900 placeholder-gray-500"
+                placeholder="Örn: 25.50"
+                required
+              />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                <span className="text-purple-600">📍</span>
+              <label className="text-base font-bold text-gray-800 mb-3 flex items-center space-x-2">
+                <span className="text-2xl">📍</span>
                 <span>Otopark Adresi</span>
                 <span className="text-red-500">*</span>
               </label>
@@ -212,16 +274,16 @@ function ParkingLotForm({
                 type="text"
                 value={formData.address}
                 onChange={(e) => setFormData({...formData, address: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
+                className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900 placeholder-gray-500"
                 placeholder="Örn: Taksim Meydanı, Beyoğlu/İstanbul"
                 required
               />
             </div>
             {formData.latitude && formData.longitude ? (
-              <div className="md:col-span-2 bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-xl border-2 border-green-300 shadow-sm">
+              <div className="md:col-span-2 bg-gradient-to-r from-green-100 to-emerald-100 p-6 rounded-2xl border-2 border-green-300 shadow-sm">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                    <span className="text-white text-lg">📍</span>
+                  <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <span className="text-white text-2xl">📍</span>
                   </div>
                   <div className="flex-1">
                     <h4 className="text-lg font-bold text-green-900 mb-1">✅ Konum Başarıyla Seçildi!</h4>
@@ -233,79 +295,62 @@ function ParkingLotForm({
                     </p>
                   </div>
                 </div>
-              </div>
+            </div>
             ) : (
               <>
-                <div>
-                  <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                    <span className="text-red-600">🌍</span>
+            <div>
+                  <label className="block text-base font-bold text-gray-800 mb-3 items-center space-x-2">
+                    <span className="text-2xl">🌍</span>
                     <span>Enlem (Latitude)</span>
                     <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    value={formData.latitude}
-                    onChange={(e) => setFormData({...formData, latitude: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
-                    placeholder="Örn: 41.0369"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                    <span className="text-red-600">🌍</span>
-                    <span>Boylam (Longitude)</span>
-                    <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    step="any"
-                    value={formData.longitude}
-                    onChange={(e) => setFormData({...formData, longitude: e.target.value})}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
-                    placeholder="Örn: 28.9852"
-                    required
-                  />
-                </div>
-              </>
-            )}
-            <div>
-              <label className="block text-base font-semibold text-gray-800 mb-2 flex items-center space-x-2">
-                <span className="text-yellow-600">💰</span>
-                <span>Saatlik Ücret (₺)</span>
-                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
-                min="0"
-                step="0.01"
-                value={formData.hourlyRate}
-                onChange={(e) => setFormData({...formData, hourlyRate: e.target.value})}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base"
-                placeholder="Örn: 25.50"
+                step="any"
+                value={formData.latitude}
+                onChange={(e) => setFormData({...formData, latitude: e.target.value})}
+                    className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900 placeholder-gray-500"
+                    placeholder="Örn: 41.0369"
                 required
               />
             </div>
-            <div className="flex items-center bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div>
+                  <label className="text-base font-bold text-gray-800 mb-3 flex items-center space-x-2">
+                    <span className="text-2xl">🌍</span>
+                    <span>Boylam (Longitude)</span>
+                    <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                step="any"
+                value={formData.longitude}
+                onChange={(e) => setFormData({...formData, longitude: e.target.value})}
+                    className="w-full px-4 py-4 bg-white/80 border-2 border-white/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-300 text-base font-medium text-gray-900 placeholder-gray-500"
+                    placeholder="Örn: 28.9852"
+                required
+              />
+            </div>
+              </>
+            )}
+            <div className="md:col-span-2 flex items-center bg-gradient-to-r from-gray-100 to-gray-200 p-6 rounded-2xl border-2 border-gray-300 shadow-sm">
               <input
                 type="checkbox"
                 id="isActive"
                 checked={formData.isActive}
                 onChange={(e) => setFormData({...formData, isActive: e.target.checked})}
-                className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 mr-3"
+                className="w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 mr-4"
               />
-              <label htmlFor="isActive" className="text-base font-semibold text-gray-800 flex items-center space-x-2">
-                <span className="text-green-600">✅</span>
+              <label htmlFor="isActive" className="text-base font-bold text-gray-800 flex items-center space-x-2">
+                <span className="text-2xl">✅</span>
                 <span>Otopark Aktif (Kullanıma Açık)</span>
               </label>
             </div>
           </div>
-          <div className="flex gap-4 pt-6 border-t border-gray-200">
-            <Button type="submit" className="flex-1 py-3 text-lg font-semibold">
+          <div className="flex gap-4 pt-8 border-t border-white/20">
+            <Button type="submit" className="flex-1 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-lg">
               {lot ? '✏️ Güncelle' : '➕ Ekle'}
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1 py-3 text-lg font-semibold">
+            <Button type="button" variant="outline" onClick={onCancel} className="flex-1 py-4 bg-white/80 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-lg font-bold">
               ❌ İptal
             </Button>
           </div>
@@ -347,8 +392,7 @@ function AdminDashboard() {
         setShowNewForm(false)
         setNewFormData({})
       }
-    } catch (err) {
-      console.error('Kaydetme hatası:', err)
+    } catch {
       showError('Otopark kaydedilirken hata oluştu.')
     }
   }
@@ -358,8 +402,7 @@ function AdminDashboard() {
       try {
         await deleteParkingLot(id)
         showSuccess('Otopark başarıyla silindi!')
-      } catch (err) {
-        console.error('Silme hatası:', err)
+      } catch {
         showError('Otopark silinirken hata oluştu.')
       }
     }
@@ -372,9 +415,30 @@ function AdminDashboard() {
     try {
       await updateParkingLot(lot.id, { occupiedSpaces: newOccupiedSpaces })
       showSuccess(`${lot.name} doluluk güncellendi: ${newOccupiedSpaces}/${lot.totalSpaces}`)
-    } catch (err) {
-      console.error('Doluluk güncelleme hatası:', err)
+    } catch {
       showError('Doluluk güncellenirken hata oluştu.')
+    }
+  }
+
+  // Durum değiştirme
+  const handleStatusChange = async (lot: ParkingLot, newStatus: ParkingStatus) => {
+    try {
+      await updateParkingLot(lot.id, { status: newStatus })
+      showSuccess(`${lot.name} durumu "${getStatusText(newStatus)}" olarak güncellendi`)
+    } catch {
+      showError('Durum güncellenirken hata oluştu.')
+    }
+  }
+
+  // Durum metni
+  const getStatusText = (status: ParkingStatus) => {
+    switch (status) {
+      case ParkingStatus.AVAILABLE: return 'Müsait'
+      case ParkingStatus.OCCUPIED: return 'Dolu'
+      case ParkingStatus.MAINTENANCE: return 'Bakımda'
+      case ParkingStatus.CLOSED: return 'Kapalı'
+      case ParkingStatus.RESERVED: return 'Rezerve'
+      default: return 'Müsait'
     }
   }
 
@@ -384,8 +448,7 @@ function AdminDashboard() {
       try {
         await seedDatabase()
         showSuccess('Demo verileri başarıyla eklendi!')
-      } catch (err) {
-        console.error('Demo veri ekleme hatası:', err)
+      } catch {
         showError('Demo verileri eklenirken hata oluştu.')
       } finally {
         setIsSeeding(false)
@@ -399,61 +462,77 @@ function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
-        <div className="text-center glass p-8 rounded-2xl">
-          <div className="loading-spinner h-16 w-16 mx-auto mb-6"></div>
-          <h2 className="text-xl font-semibold text-white mb-2">Admin Panel Yükleniyor</h2>
-          <p className="text-white/80">Veriler hazırlanıyor...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="fixed inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+          <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        </div>
+        
+        <div className="relative z-10 text-center bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-2xl p-8">
+          <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center animate-pulse">
+            <Shield className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Admin Panel Yükleniyor
+          </h2>
+          <p className="text-gray-600 font-medium">Veriler hazırlanıyor...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
       {/* Admin Header */}
-      <header className="glass border-b border-white/20 sticky top-0 z-50 backdrop-blur-xl">
-        <div className="max-w-[1800px] mx-auto px-6 lg:px-12">
-          <div className="flex justify-between items-center h-24">
+      <header className="z-10 bg-white/80 backdrop-blur-lg border-b border-white/20 sticky top-0 shadow-lg">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl shadow-lg">
-                  <Car className="h-8 w-8 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-12 hover:rotate-0 transition-transform duration-300">
+                  <Shield className="h-6 w-6 text-white" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white">
-                  <div className="w-full h-full bg-orange-400 rounded-full animate-ping"></div>
-                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white bg-gradient-to-r from-white to-purple-100 bg-clip-text">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Admin Panel
                 </h1>
-                <p className="text-white/80 text-sm font-medium">
+                <p className="text-gray-600 text-sm font-medium">
                   Otopark yönetimi ve istatistikler
                 </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
               <Button 
-                variant="secondary" 
+                variant="outline" 
                 onClick={handleSeedData}
                 disabled={isSeeding}
-                className="bg-amber-500/20 border-amber-400/30 text-amber-100 hover:bg-amber-400/30 backdrop-blur-sm"
+                className="bg-white/70 backdrop-blur-sm border-2 border-amber-300 text-amber-700 hover:bg-amber-50 hover:border-amber-400 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold"
               >
                 <Database className="h-4 w-4 mr-2" />
                 {isSeeding ? 'Ekleniyor...' : 'Demo Veriler'}
               </Button>
               <Button 
-                variant="secondary" 
+                variant="outline" 
                 onClick={() => window.location.href = '/'}
-                className="bg-white/20 border-white/30 text-white hover:bg-white/30 backdrop-blur-sm"
+                className="bg-white/70 backdrop-blur-sm border-2 border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold"
               >
                 Ana Sayfa
               </Button>
               <Button 
-                variant="secondary" 
+                variant="outline" 
                 onClick={logout}
-                className="bg-red-500/20 border-red-400/30 text-red-100 hover:bg-red-400/30 backdrop-blur-sm"
+                className="bg-white/70 backdrop-blur-sm border-2 border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400 transition-all duration-300 hover:scale-105 px-4 py-2 rounded-xl shadow-lg font-semibold"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Çıkış
@@ -463,15 +542,15 @@ function AdminDashboard() {
         </div>
       </header>
 
-      <div className="max-w-[1800px] mx-auto px-6 lg:px-12 py-8">
+      <div className="relative z-10 max-w-[1600px] mx-auto px-6 sm:px-8 lg:px-12 py-8">
         {/* Modern İstatistikler */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                      <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full">
-            <CardContent className="p-6 h-full">
-              <div className="flex items-center justify-between h-full">
+          <Card className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in-up">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Toplam Otopark</p>
-                  <p className="text-4xl font-bold text-slate-900 leading-tight">{parkingLots.length}</p>
+                  <p className="text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">Toplam Otopark</p>
+                  <p className="text-4xl font-bold text-gray-900">{parkingLots.length}</p>
                 </div>
                 <div className="flex-shrink-0 ml-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl shadow-lg flex items-center justify-center">
@@ -482,12 +561,12 @@ function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full" style={{"animationDelay": "0.1s"}}>
-            <CardContent className="p-6 h-full">
-              <div className="flex items-center justify-between h-full">
+          <Card className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Toplam Park Yeri</p>
-                  <p className="text-4xl font-bold text-slate-900 leading-tight">{totalSpaces}</p>
+                  <p className="text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">Toplam Park Yeri</p>
+                  <p className="text-4xl font-bold text-gray-900">{totalSpaces}</p>
                 </div>
                 <div className="flex-shrink-0 ml-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl shadow-lg flex items-center justify-center">
@@ -498,12 +577,12 @@ function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full" style={{"animationDelay": "0.2s"}}>
-            <CardContent className="p-6 h-full">
-              <div className="flex items-center justify-between h-full">
+          <Card className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-400">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Dolu Park Yeri</p>
-                  <p className="text-4xl font-bold text-slate-900 leading-tight">{totalOccupied}</p>
+                  <p className="text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">Dolu Park Yeri</p>
+                  <p className="text-4xl font-bold text-gray-900">{totalOccupied}</p>
                 </div>
                 <div className="flex-shrink-0 ml-4">
                   <div className="w-16 h-16 bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl shadow-lg flex items-center justify-center">
@@ -514,15 +593,15 @@ function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="card-elevated slide-up hover:scale-105 transition-transform duration-300 h-full" style={{"animationDelay": "0.3s"}}>
-            <CardContent className="p-6 h-full">
-              <div className="flex items-center justify-between h-full">
+          <Card className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 animate-fade-in-up animation-delay-600">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-slate-600 mb-2 uppercase tracking-wider">Ortalama Doluluk</p>
-                  <p className="text-4xl font-bold text-slate-900 leading-tight">%{averageOccupancy}</p>
+                  <p className="text-sm font-bold text-gray-600 mb-2 uppercase tracking-wider">Ortalama Doluluk</p>
+                  <p className="text-4xl font-bold text-gray-900">%{averageOccupancy}</p>
                 </div>
                 <div className="flex-shrink-0 ml-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-rose-500 to-pink-600 rounded-2xl shadow-lg flex items-center justify-center">
+                  <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-violet-600 rounded-2xl shadow-lg flex items-center justify-center">
                     <BarChart3 className="h-8 w-8 text-white" />
                   </div>
                 </div>
@@ -545,11 +624,11 @@ function AdminDashboard() {
             }}
           />
         ) : (
-          <Card className="card-elevated slide-up hover:shadow-2xl transition-all duration-500 bg-white border-0 shadow-xl">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 px-8 py-6">
+          <Card className="bg-white/40 backdrop-blur-xl border border-white/40 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300">
+            <CardHeader className="bg-white/60 backdrop-blur-md border-b border-white/20 px-8 py-6">
               <div className="flex justify-between items-center">
                 <CardTitle className="text-2xl font-bold text-gray-900 flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                     <Car className="h-6 w-6 text-white" />
                   </div>
                   <span>🏢 Otoparklar</span>
@@ -557,75 +636,75 @@ function AdminDashboard() {
                 <div className="flex gap-3">
                   <Button 
                     onClick={() => setShowMapPicker(true)}
-                    className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base font-bold"
                   >
                     <Plus className="h-5 w-5 mr-2" />
                     🗺️ Harita ile Ekle
                   </Button>
-                  <Button 
+                <Button 
                     onClick={() => setShowNewForm(true)}
-                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base"
-                  >
-                    <Plus className="h-5 w-5 mr-2" />
+                    className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-6 py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-base font-bold"
+                >
+                  <Plus className="h-5 w-5 mr-2" />
                     ✏️ Manuel Ekle
-                  </Button>
+                </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="p-0">
               
               <div className="w-full">
-                <table className="w-full table-fixed">
-                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
+                <table className="w-full min-w-full table-auto">
+                  <thead className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                     <tr>
-                      <th className="w-[22%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         🏢 Otopark
                       </th>
-                      <th className="w-[35%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         🚗 Doluluk & Güncelleme
                       </th>
-                      <th className="w-[12%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         💰 Ücret
                       </th>
-                      <th className="w-[10%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         📊 Durum
                       </th>
-                      <th className="w-[11%] px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                      <th className="px-8 py-5 text-left text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         🕒 Güncelleme
                       </th>
-                      <th className="w-[10%] px-6 py-4 text-right text-sm font-bold text-gray-700 uppercase tracking-wider">
+                      <th className="px-8 py-5 text-right text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                         ⚡ İşlemler
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
-                    {parkingLots.map((lot, index) => {
+                  <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                    {parkingLots.map((lot) => {
                       const occupancyPercentage = calculateOccupancyPercentage(lot.occupiedSpaces, lot.totalSpaces)
                       return (
-                        <tr key={lot.id} className="hover:bg-gray-50 transition-all duration-300 hover:shadow-lg table-row-enter border-b border-gray-100 last:border-b-0" style={{animationDelay: `${index * 0.1}s`}}>
-                          <td className="px-6 py-4 align-top">
-                            <div className="flex items-center space-x-3">
+                        <tr key={lot.id} className="hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
+                          <td className="px-8 py-6 align-top">
+                            <div className="flex items-center space-x-4">
                               <div className="flex-shrink-0">
-                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                  <Car className="h-5 w-5 text-white" />
+                                <div className="w-12 h-12 bg-indigo-500 dark:bg-indigo-600 rounded-lg flex items-center justify-center">
+                                  <Car className="h-6 w-6 text-white" />
                                 </div>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <div className="text-sm font-bold text-gray-900 truncate">{lot.name}</div>
-                                <div className="text-xs text-gray-600 truncate">{lot.address}</div>
+                                <div className="text-base font-semibold text-slate-900 dark:text-slate-100 truncate">{lot.name}</div>
+                                <div className="text-sm text-slate-500 dark:text-slate-400 truncate">{lot.address}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 align-top">
+                          <td className="px-8 py-6 align-top">
                             <div className="mb-3">
-                              <div className="text-sm font-bold text-gray-900 mb-2">
+                              <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-2">
                                 {lot.occupiedSpaces}/{lot.totalSpaces} (%{occupancyPercentage})
                               </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2 mb-3 shadow-inner">
+                              <div className="w-full bg-slate-200 dark:bg-slate-600 rounded-full h-2">
                                 <div 
                                   className={`h-2 rounded-full transition-all duration-700 ${
-                                    occupancyPercentage >= 90 ? 'bg-gradient-to-r from-red-500 to-red-600' :
-                                    occupancyPercentage >= 70 ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' : 'bg-gradient-to-r from-green-500 to-green-600'
+                                    occupancyPercentage >= 90 ? 'bg-rose-500 dark:bg-rose-400' :
+                                    occupancyPercentage >= 70 ? 'bg-amber-500 dark:bg-amber-400' : 'bg-emerald-500 dark:bg-emerald-400'
                                   }`}
                                   style={{ width: `${occupancyPercentage}%` }}
                                 ></div>
@@ -633,11 +712,11 @@ function AdminDashboard() {
                             </div>
                             <div className="flex items-center justify-between mt-3">
                               <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-1 p-1 bg-red-50 rounded-lg">
+                                <div className="flex items-center gap-1 p-2 bg-rose-50 dark:bg-rose-900/30 rounded-lg border border-rose-200 dark:border-rose-700">
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, -10)}
                                     disabled={lot.occupiedSpaces <= 0}
-                                    className="w-8 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-8 h-7 text-xs font-medium bg-rose-500 dark:bg-rose-600 text-white rounded hover:bg-rose-600 dark:hover:bg-rose-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="10 araç çıktı"
                                   >
                                     -10
@@ -645,7 +724,7 @@ function AdminDashboard() {
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, -5)}
                                     disabled={lot.occupiedSpaces <= 0}
-                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-7 h-7 text-xs font-medium bg-rose-500 dark:bg-rose-600 text-white rounded hover:bg-rose-600 dark:hover:bg-rose-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="5 araç çıktı"
                                   >
                                     -5
@@ -653,7 +732,7 @@ function AdminDashboard() {
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, -3)}
                                     disabled={lot.occupiedSpaces <= 0}
-                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-7 h-7 text-xs font-medium bg-rose-500 dark:bg-rose-600 text-white rounded hover:bg-rose-600 dark:hover:bg-rose-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="3 araç çıktı"
                                   >
                                     -3
@@ -661,18 +740,18 @@ function AdminDashboard() {
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, -1)}
                                     disabled={lot.occupiedSpaces <= 0}
-                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-red-500 to-red-600 text-white rounded hover:from-red-600 hover:to-red-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-7 h-7 text-xs font-medium bg-rose-500 dark:bg-rose-600 text-white rounded hover:bg-rose-600 dark:hover:bg-rose-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="1 araç çıktı"
                                   >
                                     -1
                                   </button>
                                 </div>
-                                <div className="w-px h-6 bg-gray-300 mx-1"></div>
-                                <div className="flex items-center gap-1 p-1 bg-green-50 rounded-lg">
+                                <div className="w-px h-8 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+                                <div className="flex items-center gap-1 p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg border border-emerald-200 dark:border-emerald-700">
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, 1)}
                                     disabled={lot.occupiedSpaces >= lot.totalSpaces}
-                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-7 h-7 text-xs font-medium bg-emerald-500 dark:bg-emerald-600 text-white rounded hover:bg-emerald-600 dark:hover:bg-emerald-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="1 araç girdi"
                                   >
                                     +1
@@ -680,7 +759,7 @@ function AdminDashboard() {
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, 3)}
                                     disabled={lot.occupiedSpaces >= lot.totalSpaces}
-                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-7 h-7 text-xs font-medium bg-emerald-500 dark:bg-emerald-600 text-white rounded hover:bg-emerald-600 dark:hover:bg-emerald-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="3 araç girdi"
                                   >
                                     +3
@@ -688,7 +767,7 @@ function AdminDashboard() {
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, 5)}
                                     disabled={lot.occupiedSpaces >= lot.totalSpaces}
-                                    className="w-7 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-7 h-7 text-xs font-medium bg-emerald-500 dark:bg-emerald-600 text-white rounded hover:bg-emerald-600 dark:hover:bg-emerald-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="5 araç girdi"
                                   >
                                     +5
@@ -696,7 +775,7 @@ function AdminDashboard() {
                                   <button
                                     onClick={() => handleQuickOccupancyUpdate(lot, 10)}
                                     disabled={lot.occupiedSpaces >= lot.totalSpaces}
-                                    className="w-8 h-6 text-xs font-bold bg-gradient-to-r from-green-500 to-green-600 text-white rounded hover:from-green-600 hover:to-green-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                    className="w-8 h-7 text-xs font-medium bg-emerald-500 dark:bg-emerald-600 text-white rounded hover:bg-emerald-600 dark:hover:bg-emerald-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                                     title="10 araç girdi"
                                   >
                                     +10
@@ -705,48 +784,74 @@ function AdminDashboard() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 align-top">
-                            <div className="flex items-center space-x-2">
-                              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-                                <span className="text-white font-bold text-sm">₺</span>
+                          <td className="px-8 py-6 align-top">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center">
+                                <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-base">₺</span>
                               </div>
-                              <div className="text-sm font-bold text-gray-900">
+                              <div className="text-base font-semibold text-slate-900 dark:text-slate-100">
                                 {lot.hourlyRate}₺
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 align-top">
-                            <span className={`inline-flex items-center px-2 py-1 text-xs font-bold rounded-full shadow-lg transition-all duration-300 ${
-                              lot.isActive 
-                                ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800 hover:from-green-200 hover:to-green-300' 
-                                : 'bg-gradient-to-r from-red-100 to-red-200 text-red-800 hover:from-red-200 hover:to-red-300'
-                            }`}>
-                              <div className={`w-1.5 h-1.5 rounded-full mr-1 ${
-                                lot.isActive ? 'bg-green-500' : 'bg-red-500'
-                              }`}></div>
-                              {lot.isActive ? 'Aktif' : 'Pasif'}
-                            </span>
+                          <td className="px-8 py-6 align-top">
+                            <div className="relative group">
+                              <button
+                                className={`
+                                  inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200
+                                  ${(lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.AVAILABLE 
+                                    ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 hover:bg-emerald-200' 
+                                    : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.OCCUPIED
+                                    ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-700 hover:bg-rose-200'
+                                    : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.MAINTENANCE
+                                    ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700 hover:bg-purple-200'
+                                    : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.CLOSED
+                                    ? 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-200'
+                                    : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 hover:bg-blue-200'
+                                  }
+                                `}
+                              >
+                                {getStatusText(lot.status || ParkingStatus.AVAILABLE)}
+                                <ChevronDown className="h-4 w-4 ml-1" />
+                              </button>
+                              
+                              {/* Dropdown Menu */}
+                              <div className="absolute top-full left-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10 min-w-[120px]">
+                                {Object.values(ParkingStatus).map((status) => (
+                                  <button
+                                    key={status}
+                                    onClick={() => handleStatusChange(lot, status)}
+                                    className={`
+                                      w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 first:rounded-t-lg last:rounded-b-lg transition-colors
+                                      ${(lot.status || ParkingStatus.AVAILABLE) === status ? 'bg-slate-100 dark:bg-slate-700 font-medium' : ''}
+                                    `}
+                                  >
+                                    {getStatusText(status)}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
                           </td>
-                          <td className="px-6 py-4 align-top">
-                            <div className="text-xs font-medium text-gray-700">
+                          <td className="px-8 py-6 align-top">
+                            <div className="text-sm text-slate-500 dark:text-slate-400">
                               {formatDate(lot.updatedAt)}
                             </div>
                           </td>
-                          <td className="px-6 py-4 align-top text-right">
-                            <div className="flex gap-1 justify-end">
+                          <td className="px-8 py-6 text-right align-top">
+                            <div className="flex items-center justify-end gap-3">
                               <button
                                 onClick={() => setEditingLot(lot)}
-                                className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500 transition-all duration-200 flex items-center justify-center"
                                 title="Düzenle"
                               >
-                                <Edit className="h-4 w-4" />
+                                <Edit className="h-5 w-5" />
                               </button>
                               <button
                                 onClick={() => handleDelete(lot.id)}
-                                className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-300 hover:shadow-lg hover:scale-105"
+                                className="w-10 h-10 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white dark:hover:bg-rose-500 transition-all duration-200 flex items-center justify-center"
                                 title="Sil"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-5 w-5" />
                               </button>
                             </div>
                           </td>
@@ -760,45 +865,76 @@ function AdminDashboard() {
           </Card>
         )}
       </div>
+
       <ToastContainer toasts={toasts} onRemove={removeToast} />
       
-      {/* Tam Sayfa Harita Seçici */}
       {showMapPicker && (
         <FullPageLocationPicker
           onLocationSelect={(location) => {
-            // Seçilen konumla form verilerini hazırla
-            const formData = {
-              name: location.name || '',
-              address: location.address,
+            setNewFormData({
+              ...newFormData,
               latitude: location.lat,
-              longitude: location.lng,
-              totalSpaces: 100, // Varsayılan park yeri sayısını artırdım
-              occupiedSpaces: 0,
-              hourlyRate: 15, // Varsayılan ücreti düşürdüm
-              isActive: true
-            }
-            
-            setNewFormData(formData)
+              longitude: location.lng
+            })
             setShowMapPicker(false)
             setShowNewForm(true)
           }}
           onCancel={() => setShowMapPicker(false)}
         />
       )}
+      
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes blob {
+          0% { transform: translate(0px, 0px) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+          100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out;
+        }
+        .animation-delay-200 {
+          animation-delay: 0.2s;
+        }
+        .animation-delay-400 {
+          animation-delay: 0.4s;
+        }
+        .animation-delay-600 {
+          animation-delay: 0.6s;
+        }
+      `}</style>
     </div>
   )
 }
 
+// Ana sayfa bileşeni
 export default function AdminPage() {
-  const { isAuthenticated, loading } = useAuth()
+  const { user, loading } = useAuth()
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Yükleniyor...</p>
+        </div>
       </div>
     )
   }
 
-  return isAuthenticated ? <AdminDashboard /> : <LoginForm />
-}
+  return user ? <AdminDashboard /> : <LoginForm />
+} 

@@ -56,18 +56,37 @@ export default function FullPageLocationPicker({
 
     // Haritayı initialize et
     mapRef.current = L.map(mapContainerRef.current, {
-      zoomControl: false // Zoom kontrollerini özelleştireceğiz
+      zoomControl: false,
+      attributionControl: false,
+      preferCanvas: true,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5,
+      wheelDebounceTime: 60,
+      wheelPxPerZoomLevel: 60,
     }).setView(defaultCenter as [number, number], initialLocation ? 13 : 6)
 
-    // Tile layer ekle
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+    // Güzel tile layer - CartoDB Positron
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© OpenStreetMap contributors, © CARTO',
+      subdomains: 'abcd',
+      maxZoom: 19
     }).addTo(mapRef.current)
 
     // Zoom kontrollerini sağ alta ekle
     L.control.zoom({
       position: 'bottomright'
     }).addTo(mapRef.current)
+
+    // Attributions ekle
+    L.control.attribution({
+      position: 'bottomleft',
+      prefix: '<a href="https://leafletjs.com" target="_blank">Leaflet</a>'
+    }).addTo(mapRef.current)
+
+    // Harita stili
+    mapRef.current.getContainer().style.borderRadius = '16px'
+    mapRef.current.getContainer().style.overflow = 'hidden'
+    mapRef.current.getContainer().style.background = 'linear-gradient(135deg, #f0f9ff, #e0e7ff, #fdf2f8)'
 
     // Başlangıç konumu marker'ı ekle
     if (initialLocation) {
@@ -99,32 +118,61 @@ export default function FullPageLocationPicker({
       markerRef.current.remove()
     }
 
-    // Yeni marker ekle
+    // Yeni marker ekle - daha güzel tasarım
     markerRef.current = L.marker([lat, lng], {
       icon: L.divIcon({
         className: 'custom-marker',
         html: `
           <div style="
-            width: 40px; 
-            height: 40px; 
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border-radius: 50% 50% 50% 0;
-            border: 3px solid white; 
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-size: 16px; 
-            font-weight: bold;
-            transform: rotate(-45deg);
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
           ">
-            <div style="transform: rotate(45deg);">📍</div>
+            <!-- Pulse animation -->
+            <div style="
+              position: absolute;
+              width: 60px; 
+              height: 60px; 
+              background: rgba(34, 197, 94, 0.3);
+              border-radius: 50%;
+              animation: pulse 2s infinite;
+            "></div>
+            
+            <!-- Ana marker -->
+            <div style="
+              width: 48px; 
+              height: 48px; 
+              background: linear-gradient(135deg, #22c55e, #16a34a);
+              border-radius: 50% 50% 50% 0;
+              border: 4px solid white; 
+              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              color: white; 
+              font-size: 18px; 
+              font-weight: bold;
+              transform: rotate(-45deg);
+              position: relative;
+              z-index: 10;
+            ">
+              <div style="transform: rotate(45deg); text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);">
+                📍
+              </div>
+            </div>
           </div>
+          
+          <style>
+            @keyframes pulse {
+              0% { transform: scale(1); opacity: 1; }
+              100% { transform: scale(1.3); opacity: 0; }
+            }
+          </style>
         `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 40]
+        iconSize: [60, 60],
+        iconAnchor: [30, 60]
       })
     }).addTo(mapRef.current)
 
@@ -133,7 +181,7 @@ export default function FullPageLocationPicker({
       if (markerRef.current) {
         const element = markerRef.current.getElement()
         if (element) {
-          element.style.animation = 'bounce 0.6s ease-out'
+          element.style.animation = 'bounceIn 0.8s ease-out'
         }
       }
     }, 100)
@@ -235,11 +283,13 @@ export default function FullPageLocationPicker({
   return (
     <div className="fixed inset-0 z-50 bg-white">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 z-[1000] bg-white shadow-lg">
-        <div className="px-4 py-3 bg-blue-50 border-b border-blue-200">
+      <div className="absolute top-0 left-0 right-0 z-[1000] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 shadow-2xl">
+        <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-bold text-blue-800 flex items-center space-x-2">
-              <MapPin className="h-5 w-5" />
+            <h1 className="text-xl font-bold text-white flex items-center space-x-3">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <MapPin className="h-5 w-5 text-white" />
+              </div>
               <span>📍 Konum Seçici</span>
             </h1>
             
@@ -248,7 +298,7 @@ export default function FullPageLocationPicker({
               <button
                 onClick={getCurrentLocation}
                 disabled={isGettingLocation}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center space-x-2"
+                className="px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center space-x-2 border border-white/20 hover:scale-105"
               >
                 <Navigation className={`h-4 w-4 ${isGettingLocation ? 'animate-spin' : ''}`} />
                 <span className="whitespace-nowrap">
@@ -259,7 +309,7 @@ export default function FullPageLocationPicker({
               {/* İptal Butonu */}
               <button
                 onClick={onCancel}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-medium flex items-center space-x-2"
+                className="px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-xl hover:bg-white/30 transition-all font-medium flex items-center space-x-2 border border-white/20 hover:scale-105"
               >
                 <X className="h-4 w-4" />
                 <span>İptal</span>
@@ -270,41 +320,57 @@ export default function FullPageLocationPicker({
       </div>
 
       {/* Harita */}
-      <div 
-        ref={mapContainerRef} 
-        className="w-full h-full pt-20"
-        style={{ minHeight: '100vh' }}
-      />
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 pt-20">
+        <div className="h-full p-6">
+          <div className="h-full bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl overflow-hidden">
+            <div 
+              ref={mapContainerRef} 
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+      </div>
 
       {/* Seçilen Konum Bilgisi */}
       {selectedLocation && (
         <div className="absolute bottom-6 left-6 right-6 z-[1000]">
-          <div className="bg-white rounded-xl shadow-xl border border-gray-200 p-6 max-w-md mx-auto">
+          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-6 max-w-md mx-auto">
             <div className="flex items-start space-x-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center">
-                  <MapPin className="h-6 w-6 text-white" />
+                <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <MapPin className="h-7 w-7 text-white" />
                 </div>
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-bold text-gray-900 text-lg mb-1">
                   {selectedLocation.name || 'Seçilen Konum'}
                 </h3>
-                <p className="text-gray-600 text-sm mb-2">
+                <p className="text-gray-600 text-sm mb-3">
                   {selectedLocation.address}
                 </p>
-                <div className="text-xs text-gray-500 space-y-1">
+                <div className="text-xs text-gray-500 space-y-2">
                   {selectedLocation.details?.road && (
-                    <div>🛣️ {selectedLocation.details.road}</div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-blue-500">🛣️</span>
+                      <span>{selectedLocation.details.road}</span>
+                    </div>
                   )}
                   {selectedLocation.details?.neighbourhood && (
-                    <div>🏘️ {selectedLocation.details.neighbourhood}</div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-purple-500">🏘️</span>
+                      <span>{selectedLocation.details.neighbourhood}</span>
+                    </div>
                   )}
                   {selectedLocation.details?.city && (
-                    <div>🏙️ {selectedLocation.details.city}</div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-orange-500">🏙️</span>
+                      <span>{selectedLocation.details.city}</span>
+                    </div>
                   )}
-                  <div className="mt-2 text-blue-600">
-                    📍 {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+                  <div className="mt-3 p-2 bg-blue-50 rounded-lg">
+                    <div className="text-blue-700 font-medium text-xs">
+                      📍 {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -313,14 +379,14 @@ export default function FullPageLocationPicker({
             <div className="mt-6 flex space-x-3">
               <button
                 onClick={handleConfirm}
-                className="flex-1 bg-green-500 text-white py-4 px-6 rounded-xl hover:bg-green-600 transition-colors font-bold text-lg flex items-center justify-center space-x-3 shadow-lg"
+                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 px-6 rounded-2xl hover:from-green-600 hover:to-emerald-700 transition-all font-bold text-lg flex items-center justify-center space-x-3 shadow-lg hover:shadow-xl hover:scale-105"
               >
                 <Check className="h-6 w-6" />
                 <span>✅ Bu Konumu Seç</span>
               </button>
               <button
                 onClick={() => setSelectedLocation(null)}
-                className="px-4 py-4 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium flex items-center space-x-2"
+                className="px-6 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-2xl hover:bg-gray-50 hover:border-gray-400 transition-all font-medium flex items-center space-x-2 hover:scale-105"
               >
                 <X className="h-5 w-5" />
                 <span>Değiştir</span>
@@ -333,9 +399,12 @@ export default function FullPageLocationPicker({
       {/* Yardım Metni */}
       {!selectedLocation && (
         <div className="absolute bottom-6 left-6 right-6 z-[1000] pointer-events-none">
-          <div className="bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-4 max-w-sm mx-auto text-center">
-            <div className="text-gray-600 text-sm">
-              🗺️ <strong>Harita üzerinde tıklayarak</strong> konum seçin<br/>
+          <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-6 max-w-sm mx-auto text-center">
+            <div className="text-4xl mb-4">🗺️</div>
+            <div className="text-gray-700 text-sm font-medium mb-2">
+              <strong>Harita üzerinde tıklayarak</strong> konum seçin
+            </div>
+            <div className="text-gray-500 text-xs">
               📍 veya yukarıdan <strong>&quot;Konumumu Al&quot;</strong> butonunu kullanın
             </div>
           </div>
@@ -356,6 +425,24 @@ export default function FullPageLocationPicker({
           }
           90% {
             transform: translate3d(0,-2px,0) scale(1.02);
+          }
+        }
+        
+        @keyframes bounceIn {
+          0% {
+            opacity: 0;
+            transform: scale(0.3) translate3d(0, 0, 0);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.05) translate3d(0, 0, 0);
+          }
+          70% {
+            transform: scale(0.9) translate3d(0, 0, 0);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translate3d(0, 0, 0);
           }
         }
       `}</style>
