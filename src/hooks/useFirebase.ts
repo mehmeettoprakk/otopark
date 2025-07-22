@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { database } from '@/lib/firebase';
 import { ref, onValue, push, set, update, remove, off } from 'firebase/database';
 import { ParkingLot, ParkingSpace, ParkingStatus } from '@/types/parking';
+import { FEATURES } from '@/constants/app';
 
 export function useParkingLots() {
   const [parkingLots, setParkingLots] = useState<ParkingLot[]>([]);
@@ -31,7 +32,7 @@ export function useParkingLots() {
       }
     }, (error) => {
       // Firebase database error'larını sessiz handle et
-      if (process.env.NODE_ENV === 'development') {
+      if (FEATURES.ENABLE_DEBUG_LOGGING) {
         console.warn('Firebase Database permission denied:', error.message);
       }
       setError('Firebase bağlantısı gerekiyor. Lütfen projeyi yapılandırın.');
@@ -119,7 +120,7 @@ export function useParkingSpaces(parkingLotId: string) {
       setLoading(false);
     }, (error) => {
       // Firebase database error'larını sessiz handle et
-      if (process.env.NODE_ENV === 'development') {
+      if (FEATURES.ENABLE_DEBUG_LOGGING) {
         console.warn('Firebase Database spaces permission denied:', error.message);
       }
       setSpaces([]);

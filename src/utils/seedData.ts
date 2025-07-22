@@ -1,5 +1,6 @@
 import { database } from '@/lib/firebase'
 import { ref, set } from 'firebase/database'
+import { FEATURES } from '@/constants/app'
 
 // İstanbul'daki demo otopark verileri
 export const demoData = {
@@ -206,7 +207,7 @@ function generateParkingSpaces(parkingLotId: string, totalSpaces: number, occupi
 
 export async function seedDatabase() {
   try {
-    if (process.env.NODE_ENV === 'development') {
+    if (FEATURES.ENABLE_DEBUG_LOGGING) {
       console.log('Demo verileri ekleniyor...')
     }
     
@@ -218,48 +219,15 @@ export async function seedDatabase() {
     const parkingSpacesRef = ref(database, 'parkingSpaces')
     await set(parkingSpacesRef, demoData.parkingSpaces)
     
-    if (process.env.NODE_ENV === 'development') {
+    if (FEATURES.ENABLE_DEBUG_LOGGING) {
       console.log('Demo verileri başarıyla eklendi!')
     }
     return true
   } catch (error) {
     // Error'ları sadece development modunda göster
-    if (process.env.NODE_ENV === 'development') {
+    if (FEATURES.ENABLE_DEBUG_LOGGING) {
       console.warn('Demo verileri eklenirken hata oluştu:', error)
     }
     return false
   }
 }
-
-// Rastgele doluluk güncellemesi için
-export function simulateOccupancyChanges() {
-  setInterval(async () => {
-    const parkingLotIds = Object.keys(demoData.parkingLots)
-    const randomLotId = parkingLotIds[Math.floor(Math.random() * parkingLotIds.length)]
-    const lot = demoData.parkingLots[randomLotId as keyof typeof demoData.parkingLots]
-    
-    // Rastgele +/- 5 arası değişim
-    const change = Math.floor(Math.random() * 11) - 5
-    const newOccupied = Math.max(0, Math.min(lot.totalSpaces, lot.occupiedSpaces + change))
-    
-    if (newOccupied !== lot.occupiedSpaces) {
-      try {
-        const lotRef = ref(database, `parkingLots/${randomLotId}`)
-        await set(lotRef, {
-          ...lot,
-          occupiedSpaces: newOccupied,
-          updatedAt: new Date().toISOString()
-        })
-        
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`${lot.name} doluluk güncellendi: ${newOccupied}/${lot.totalSpaces}`)
-        }
-      } catch (error) {
-        // Simulation error'larını sessiz handle et
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Doluluk güncellenirken hata:', error)
-        }
-      }
-    }
-  }, 10000) // Her 10 saniyede bir güncelle
-} 
