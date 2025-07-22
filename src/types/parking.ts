@@ -9,8 +9,25 @@ export interface ParkingLot {
   hourlyRate: number;
   isActive: boolean;
   status: ParkingStatus;
+  openingHours: OpeningHours;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface OpeningHours {
+  monday: DaySchedule;
+  tuesday: DaySchedule;
+  wednesday: DaySchedule;
+  thursday: DaySchedule;
+  friday: DaySchedule;
+  saturday: DaySchedule;
+  sunday: DaySchedule;
+}
+
+export interface DaySchedule {
+  isOpen: boolean;
+  openTime: string; // HH:MM format
+  closeTime: string; // HH:MM format
 }
 
 export enum ParkingStatus {

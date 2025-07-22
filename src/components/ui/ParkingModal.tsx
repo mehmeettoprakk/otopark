@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { X, Car, Clock, MapPin, Navigation } from 'lucide-react'
 import Button from './Button'
 import { ParkingLot } from '@/types/parking'
 import { calculateOccupancyPercentage, formatCurrency } from '@/lib/utils'
 import { getStatusStyle } from '@/utils/styleUtils'
+import { useParkingTimeStatus } from '@/hooks/useParkingTimeStatus'
 
 interface ParkingModalProps {
   lot: ParkingLot | null
@@ -22,6 +23,21 @@ export default function ParkingModal({
   isDarkMode,
   distance 
 }: ParkingModalProps) {
+  // Opening hours'ı memoize et - her render'da yeni obje oluşmasını engelle
+  const memoizedOpeningHours = useMemo(() => {
+    return lot?.openingHours || {
+      monday: { isOpen: false, openTime: '00:00', closeTime: '00:00' },
+      tuesday: { isOpen: false, openTime: '00:00', closeTime: '00:00' },
+      wednesday: { isOpen: false, openTime: '00:00', closeTime: '00:00' },
+      thursday: { isOpen: false, openTime: '00:00', closeTime: '00:00' },
+      friday: { isOpen: false, openTime: '00:00', closeTime: '00:00' },
+      saturday: { isOpen: false, openTime: '00:00', closeTime: '00:00' },
+      sunday: { isOpen: false, openTime: '00:00', closeTime: '00:00' }
+    };
+  }, [lot?.openingHours]);
+
+  const timeStatus = useParkingTimeStatus(memoizedOpeningHours);
+
   if (!isOpen || !lot) return null
 
   const occupancyPercentage = calculateOccupancyPercentage(lot.occupiedSpaces, lot.totalSpaces)
@@ -164,6 +180,62 @@ export default function ParkingModal({
                 }`}
                 style={{ width: `${occupancyPercentage}%` }}
               />
+            </div>
+          </div>
+
+          {/* Opening Hours Status */}
+          <div className={`p-4 rounded-xl ${
+            isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'
+          }`}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center space-x-2">
+                <Clock className={`h-5 w-5 ${timeStatus.isOpen ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-sm font-medium ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                }`}>
+                  Çalışma Durumu
+                </span>
+              </div>
+              <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                timeStatus.isOpen
+                  ? isDarkMode 
+                    ? 'bg-green-900/30 text-green-300 border border-green-800' 
+                    : 'bg-green-100 text-green-700 border border-green-200'
+                  : isDarkMode 
+                    ? 'bg-red-900/30 text-red-300 border border-red-800' 
+                    : 'bg-red-100 text-red-700 border border-red-200'
+              }`}>
+                {timeStatus.isOpen ? '🟢 Açık' : '🔴 Kapalı'}
+              </span>
+            </div>
+            
+            <div className={`text-sm ${
+              timeStatus.isOpen
+                ? isDarkMode ? 'text-green-400' : 'text-green-600'
+                : isDarkMode ? 'text-red-400' : 'text-red-600'
+            }`}>
+              {timeStatus.statusMessage}
+            </div>
+            
+            {/* Today's Schedule */}
+            <div className={`text-xs mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              {(() => {
+                const today = new Date().getDay()
+                const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+                const dayNamesTurkish = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi']
+                const todayKey = dayNames[today] as keyof typeof lot.openingHours
+                const todaySchedule = lot.openingHours[todayKey]
+                
+                return (
+                  <span>
+                    Bugün ({dayNamesTurkish[today]}): {
+                      todaySchedule.isOpen 
+                        ? `${todaySchedule.openTime} - ${todaySchedule.closeTime}`
+                        : 'Kapalı'
+                    }
+                  </span>
+                )
+              })()}
             </div>
           </div>
         </div>

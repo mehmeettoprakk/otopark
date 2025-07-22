@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/useToast'
 import { useDarkMode } from '@/hooks/useDarkMode'
+import { ToastContainer } from '@/components/ui/Toast'
 
 interface LoginFormProps {
   onLoginSuccess?: () => void
@@ -17,7 +18,7 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   
   const { login } = useAuth()
-  const { showError } = useToast()
+  const { showError, toasts, removeToast } = useToast()
   const { isDarkMode } = useDarkMode()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -25,12 +26,17 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
     setLoading(true)
 
     try {
-      await login(email, password)
-      if (onLoginSuccess) {
-        onLoginSuccess()
+      const result = await login(email, password)
+      
+      if (result.success) {
+        if (onLoginSuccess) {
+          onLoginSuccess()
+        }
+      } else {
+        showError(result.message)
       }
     } catch (error) {
-      showError('Giriş yapılırken hata oluştu. Lütfen bilgilerinizi kontrol edin.')
+      showError('Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.')
       console.error('Login error:', error)
     } finally {
       setLoading(false)
@@ -65,7 +71,6 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
             Otopark yönetim sistemine giriş yapın
           </p>
         </CardHeader>
-
         <CardContent className="px-8 pb-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
@@ -157,6 +162,9 @@ export default function LoginForm({ onLoginSuccess }: LoginFormProps) {
           </form>
         </CardContent>
       </Card>
+      
+      {/* Toast Container */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   )
 } 

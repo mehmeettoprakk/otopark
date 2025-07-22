@@ -15,6 +15,15 @@ export const demoData = {
       hourlyRate: 25,
       isActive: true,
       status: 'nearly_full',
+      openingHours: {
+        monday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        tuesday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        wednesday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        thursday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        friday: { isOpen: true, openTime: '08:00', closeTime: '22:00' },
+        saturday: { isOpen: true, openTime: '09:00', closeTime: '22:00' },
+        sunday: { isOpen: true, openTime: '10:00', closeTime: '18:00' }
+      },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -28,6 +37,15 @@ export const demoData = {
       hourlyRate: 20,
       isActive: true,
       status: 'nearly_full',
+      openingHours: {
+        monday: { isOpen: true, openTime: '07:30', closeTime: '21:00' },
+        tuesday: { isOpen: true, openTime: '07:30', closeTime: '21:00' },
+        wednesday: { isOpen: true, openTime: '07:30', closeTime: '21:00' },
+        thursday: { isOpen: true, openTime: '07:30', closeTime: '21:00' },
+        friday: { isOpen: true, openTime: '07:30', closeTime: '23:00' },
+        saturday: { isOpen: true, openTime: '08:00', closeTime: '23:00' },
+        sunday: { isOpen: false, openTime: '00:00', closeTime: '00:00' }
+      },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -41,6 +59,15 @@ export const demoData = {
       hourlyRate: 30,
       isActive: true,
       status: 'nearly_full',
+      openingHours: {
+        monday: { isOpen: true, openTime: '06:00', closeTime: '24:00' },
+        tuesday: { isOpen: true, openTime: '06:00', closeTime: '24:00' },
+        wednesday: { isOpen: true, openTime: '06:00', closeTime: '24:00' },
+        thursday: { isOpen: true, openTime: '06:00', closeTime: '24:00' },
+        friday: { isOpen: true, openTime: '06:00', closeTime: '24:00' },
+        saturday: { isOpen: true, openTime: '06:00', closeTime: '24:00' },
+        sunday: { isOpen: true, openTime: '08:00', closeTime: '22:00' }
+      },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -54,6 +81,15 @@ export const demoData = {
       hourlyRate: 22,
       isActive: true,
       status: 'available',
+      openingHours: {
+        monday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        tuesday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        wednesday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        thursday: { isOpen: true, openTime: '08:00', closeTime: '20:00' },
+        friday: { isOpen: true, openTime: '08:00', closeTime: '22:00' },
+        saturday: { isOpen: true, openTime: '10:00', closeTime: '22:00' },
+        sunday: { isOpen: true, openTime: '10:00', closeTime: '18:00' }
+      },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },

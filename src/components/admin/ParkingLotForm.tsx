@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Car, X } from 'lucide-react'
+import { Car, X, Clock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
-import { ParkingLot, ParkingStatus } from '@/types/parking'
+import { ParkingLot, ParkingStatus, OpeningHours, DaySchedule } from '@/types/parking'
 import { APP_CONFIG } from '@/constants/app'
 import { useDarkMode } from '@/hooks/useDarkMode'
+import { getDefaultOpeningHours } from '@/utils/openingHours'
 
 interface ParkingLotFormProps {
   lot?: ParkingLot | Partial<ParkingLot>
@@ -22,6 +23,7 @@ interface FormData {
   hourlyRate: string
   isActive: boolean
   status: ParkingStatus
+  openingHours: OpeningHours
 }
 
 export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotFormProps) {
@@ -35,7 +37,8 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
     occupiedSpaces: lot?.occupiedSpaces?.toString() || '',
     hourlyRate: lot?.hourlyRate?.toString() || '',
     isActive: lot?.isActive ?? true,
-    status: lot?.status || ParkingStatus.AVAILABLE
+    status: lot?.status || ParkingStatus.AVAILABLE,
+    openingHours: lot?.openingHours || getDefaultOpeningHours()
   })
 
   // Auto-update status based on occupancy percentage
@@ -70,12 +73,36 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
       totalSpaces: parseInt(formData.totalSpaces) || 0,
       occupiedSpaces: parseInt(formData.occupiedSpaces) || 0,
       hourlyRate: parseFloat(formData.hourlyRate) || 0,
-      status: formData.status
+      status: formData.status,
+      openingHours: formData.openingHours
     })
   }
 
-  const handleInputChange = (field: keyof FormData, value: string | boolean) => {
+  const handleInputChange = (field: keyof FormData, value: string | boolean | OpeningHours) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleOpeningHoursChange = (day: keyof OpeningHours, field: keyof DaySchedule, value: string | boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      openingHours: {
+        ...prev.openingHours,
+        [day]: {
+          ...prev.openingHours[day],
+          [field]: value
+        }
+      }
+    }))
+  }
+
+  const dayNames = {
+    monday: 'Pazartesi',
+    tuesday: 'Salı', 
+    wednesday: 'Çarşamba',
+    thursday: 'Perşembe',
+    friday: 'Cuma',
+    saturday: 'Cumartesi',
+    sunday: 'Pazar'
   }
 
   const isEditing = !!lot
@@ -258,6 +285,91 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
                 }`}
                 placeholder="Örn: 12.50"
               />
+            </div>
+          </div>
+
+          {/* Opening Hours Section */}
+          <div>
+            <label className={`flex items-center text-lg font-bold mb-4 transition-colors duration-300 ${
+              isDarkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>
+              <Clock className="mr-2 h-5 w-5" />
+              🕒 Çalışma Saatleri
+            </label>
+            <div className={`border rounded-xl p-6 space-y-4 transition-all duration-300 ${
+              isDarkMode 
+                ? 'border-gray-600 bg-gray-800/50' 
+                : 'border-gray-200 bg-gray-50/50'
+            }`}>
+              {Object.entries(dayNames).map(([dayKey, dayName]) => {
+                const dayData = formData.openingHours[dayKey as keyof OpeningHours];
+                return (
+                  <div key={dayKey} className="flex items-center justify-between space-x-4">
+                    <div className="flex items-center space-x-3 min-w-[120px]">
+                      <input
+                        type="checkbox"
+                        checked={dayData.isOpen}
+                        onChange={(e) => handleOpeningHoursChange(dayKey as keyof OpeningHours, 'isOpen', e.target.checked)}
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className={`font-medium transition-colors duration-300 ${
+                        isDarkMode ? 'text-gray-200' : 'text-gray-700'
+                      }`}>
+                        {dayName}
+                      </span>
+                    </div>
+                    
+                    {dayData.isOpen && (
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-sm transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                          }`}>
+                            Açılış:
+                          </span>
+                          <input
+                            type="time"
+                            value={dayData.openTime}
+                            onChange={(e) => handleOpeningHoursChange(dayKey as keyof OpeningHours, 'openTime', e.target.value)}
+                            className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
+                              isDarkMode 
+                                ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`text-sm transition-colors duration-300 ${
+                            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                          }`}>
+                            Kapanış:
+                          </span>
+                          <input
+                            type="time"
+                            value={dayData.closeTime}
+                            onChange={(e) => handleOpeningHoursChange(dayKey as keyof OpeningHours, 'closeTime', e.target.value)}
+                            className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
+                              isDarkMode 
+                                ? 'border-gray-600 bg-gray-700 text-gray-100' 
+                                : 'border-gray-300 bg-white text-gray-900'
+                            }`}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    
+                    {!dayData.isOpen && (
+                      <span className={`text-sm font-medium px-3 py-1 rounded-full transition-colors duration-300 ${
+                        isDarkMode 
+                          ? 'bg-red-900/30 text-red-300 border border-red-800' 
+                          : 'bg-red-100 text-red-600 border border-red-200'
+                      }`}>
+                        Kapalı
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

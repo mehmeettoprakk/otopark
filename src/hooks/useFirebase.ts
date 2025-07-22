@@ -3,6 +3,8 @@ import { database } from '@/lib/firebase';
 import { ref, onValue, push, set, update, remove, off } from 'firebase/database';
 import { ParkingLot, ParkingSpace, ParkingStatus } from '@/types/parking';
 import { FEATURES } from '@/constants/app';
+import { updateAllParkingStatuses } from '@/services/parkingStatusService';
+import { demoData } from '@/utils/seedData';
 
 export function useParkingLots() {
   const [parkingLots, setParkingLots] = useState<ParkingLot[]>([]);
@@ -16,11 +18,27 @@ export function useParkingLots() {
       try {
         const data = snapshot.val();
         if (data) {
-          const lots: ParkingLot[] = Object.keys(data).map(key => ({
-            id: key,
-            ...data[key]
-          }));
-          setParkingLots(lots);
+          const lots: ParkingLot[] = Object.keys(data).map(key => {
+            const lot = data[key];
+            // Eksik alanları varsayılan değerlerle tamamla
+            return {
+              id: key,
+              ...lot,
+              openingHours: lot.openingHours || {
+                monday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+                tuesday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+                wednesday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+                thursday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+                friday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+                saturday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+                sunday: { isOpen: true, openTime: "08:00", closeTime: "22:00" }
+              }
+            };
+          });
+          
+          // Çalışma saatlerine göre durumları otomatik güncelle
+          const updatedLots = updateAllParkingStatuses(lots);
+          setParkingLots(updatedLots);
         } else {
           setParkingLots([]);
         }
@@ -35,8 +53,44 @@ export function useParkingLots() {
       if (FEATURES.ENABLE_DEBUG_LOGGING) {
         console.warn('Firebase Database permission denied:', error.message);
       }
-      setError('Firebase bağlantısı gerekiyor. Lütfen projeyi yapılandırın.');
-      setLoading(false);
+      
+      // Firebase bağlantısı olmadığında demo verileri kullan
+      try {
+        const lots: ParkingLot[] = Object.keys(demoData.parkingLots).map(key => {
+          const lot = demoData.parkingLots[key as keyof typeof demoData.parkingLots];
+          return {
+            id: key,
+            name: lot.name,
+            address: lot.address,
+            latitude: lot.latitude,
+            longitude: lot.longitude,
+            totalSpaces: lot.totalSpaces,
+            occupiedSpaces: lot.occupiedSpaces,
+            hourlyRate: lot.hourlyRate,
+            isActive: lot.isActive,
+            status: lot.status as ParkingStatus,
+            openingHours: 'openingHours' in lot ? lot.openingHours : {
+              monday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+              tuesday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+              wednesday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+              thursday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+              friday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+              saturday: { isOpen: true, openTime: "08:00", closeTime: "22:00" },
+              sunday: { isOpen: true, openTime: "08:00", closeTime: "22:00" }
+            },
+            createdAt: lot.createdAt,
+            updatedAt: lot.updatedAt
+          };
+        });
+        
+        const updatedLots = updateAllParkingStatuses(lots);
+        setParkingLots(updatedLots);
+        setLoading(false);
+        setError(null);
+      } catch {
+        setError('Veriler yüklenirken hata oluştu');
+        setLoading(false);
+      }
     });
 
     return () => off(parkingLotsRef, 'value', unsubscribe);
