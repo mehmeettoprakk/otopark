@@ -132,8 +132,39 @@ export default function ParkingListSidebar({
       <div className="w-full">
         <div className={getCardClasses(isDarkMode, 'h-[60vh] lg:h-[70vh] flex items-center justify-center')}>
           <div className="text-center">
-            <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className={getTextClasses('muted', isDarkMode)}>Otoparklar yükleniyor...</p>
+            {/* Modern car loading animation */}
+            <div className="relative mb-6">
+              <div className={`w-16 h-16 border-4 rounded-full mx-auto animate-spin ${
+                isDarkMode 
+                  ? 'border-gray-700 border-t-blue-400' 
+                  : 'border-gray-200 border-t-blue-600'
+              }`}></div>
+              <div className={`absolute inset-0 flex items-center justify-center ${
+                isDarkMode ? 'text-blue-400' : 'text-blue-600'
+              }`}>
+                <Car className="w-6 h-6 animate-bounce" />
+              </div>
+            </div>
+            
+            <h3 className={`text-lg font-semibold mb-2 ${
+              isDarkMode ? 'text-gray-200' : 'text-gray-800'
+            }`}>
+              Otoparklar Yükleniyor
+            </h3>
+            <p className={getTextClasses('muted', isDarkMode)}>Lütfen bekleyin...</p>
+            
+            {/* Loading dots */}
+            <div className="flex justify-center space-x-2 mt-4">
+              <div className={`w-2 h-2 rounded-full animate-pulse ${
+                isDarkMode ? 'bg-blue-400' : 'bg-blue-600'
+              }`} style={{ animationDelay: '0ms' }}></div>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${
+                isDarkMode ? 'bg-blue-400' : 'bg-blue-600'
+              }`} style={{ animationDelay: '150ms' }}></div>
+              <div className={`w-2 h-2 rounded-full animate-pulse ${
+                isDarkMode ? 'bg-blue-400' : 'bg-blue-600'
+              }`} style={{ animationDelay: '300ms' }}></div>
+            </div>
           </div>
         </div>
       </div>

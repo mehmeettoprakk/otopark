@@ -10,6 +10,7 @@ import FilterControls from '@/components/controls/FilterControls'
 import ParkingListSidebar from '@/components/sections/ParkingListSidebar'
 import ParkingModal from '@/components/ui/ParkingModal'
 import Button from '@/components/ui/Button'
+import LoadingScreen from '@/components/ui/LoadingScreen'
 import { useParkingLots } from '@/hooks/useFirebase'
 import { useLocation } from '@/hooks/useLocation'
 import { useDarkMode } from '@/hooks/useDarkMode'
@@ -92,13 +93,11 @@ export default function HomePage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-8"></div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Otopark Verileri Yükleniyor</h1>
-          <p className="text-gray-600">Lütfen bekleyin...</p>
-        </div>
-      </div>
+      <LoadingScreen 
+        message="Otopark Verileri Yükleniyor"
+        description="Lütfen bekleyin..."
+        isDarkMode={isDarkMode}
+      />
     )
   }
 
