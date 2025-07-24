@@ -219,7 +219,6 @@ function generateParkingSpaces(parkingLotId: string, totalSpaces: number, occupi
     parkingLotId: string
     spaceNumber: string
     isOccupied: boolean
-    vehicleLicensePlate: string | null
     entryTime: string | null
     exitTime: string | null
   }> = {}
@@ -232,7 +231,6 @@ function generateParkingSpaces(parkingLotId: string, totalSpaces: number, occupi
       parkingLotId,
       spaceNumber: i.toString().padStart(3, '0'),
       isOccupied,
-      vehicleLicensePlate: isOccupied ? `34ABC${Math.floor(Math.random() * 900) + 100}` : null,
       entryTime: isOccupied ? new Date(Date.now() - Math.random() * 4 * 60 * 60 * 1000).toISOString() : null,
       exitTime: null
     }

@@ -184,12 +184,11 @@ export function useParkingSpaces(parkingLotId: string) {
     return () => off(spacesRef, 'value', unsubscribe);
   }, [parkingLotId]);
 
-  const updateSpaceOccupancy = async (spaceId: string, isOccupied: boolean, vehicleLicensePlate?: string) => {
+  const updateSpaceOccupancy = async (spaceId: string, isOccupied: boolean) => {
     try {
       const spaceRef = ref(database, `parkingSpaces/${parkingLotId}/${spaceId}`);
       await update(spaceRef, {
         isOccupied,
-        vehicleLicensePlate: isOccupied ? vehicleLicensePlate : null,
         entryTime: isOccupied ? new Date().toISOString() : null,
         exitTime: !isOccupied ? new Date().toISOString() : null
       });
