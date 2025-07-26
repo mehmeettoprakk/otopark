@@ -12,8 +12,10 @@ export const updateParkingStatusByHours = (lot: ParkingLot, currentDate: Date = 
     return ParkingStatus.CLOSED;
   }
 
-  // Manuel durumları koru (bakım, rezerve)
-  if (lot.status === ParkingStatus.MAINTENANCE || lot.status === ParkingStatus.RESERVED) {
+  // Manuel durumları koru (bakım, rezerve, kapalı)
+  if (lot.status === ParkingStatus.MAINTENANCE || 
+      lot.status === ParkingStatus.RESERVED || 
+      lot.status === ParkingStatus.CLOSED) {
     return lot.status;
   }
 
@@ -35,8 +37,16 @@ export const updateParkingStatusByHours = (lot: ParkingLot, currentDate: Date = 
  * Tüm otoparkların durumlarını günceller
  */
 export const updateAllParkingStatuses = (lots: ParkingLot[], currentDate: Date = new Date()): ParkingLot[] => {
-  return lots.map(lot => ({
-    ...lot,
-    status: updateParkingStatusByHours(lot, currentDate)
-  }));
+  return lots.map(lot => {
+    const newStatus = updateParkingStatusByHours(lot, currentDate);
+    
+    // Kapalı otoparkların doluluk oranını 0 yap
+    const occupiedSpaces = newStatus === ParkingStatus.CLOSED ? 0 : lot.occupiedSpaces;
+    
+    return {
+      ...lot,
+      status: newStatus,
+      occupiedSpaces
+    };
+  });
 };

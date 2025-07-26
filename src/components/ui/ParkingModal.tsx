@@ -36,7 +36,7 @@ export default function ParkingModal({
     };
   }, [lot?.openingHours]);
 
-  const timeStatus = useParkingTimeStatus(memoizedOpeningHours);
+  const timeStatus = useParkingTimeStatus(memoizedOpeningHours, lot?.status);
 
   if (!isOpen || !lot) return null
 

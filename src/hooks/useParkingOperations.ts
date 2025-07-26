@@ -60,8 +60,19 @@ export function useParkingOperations({
           )
           return distanceA - distanceB
         } else {
+          // Doluluk oranına göre sırala ama kapalı otoparkları en sona koy
           const occupancyA = calculateOccupancyPercentage(a.occupiedSpaces, a.totalSpaces)
           const occupancyB = calculateOccupancyPercentage(b.occupiedSpaces, b.totalSpaces)
+          
+          // Kapalı durumları kontrol et
+          const aIsClosed = a.status === ParkingStatus.CLOSED
+          const bIsClosed = b.status === ParkingStatus.CLOSED
+          
+          // Kapalı olanlar en sona
+          if (aIsClosed && !bIsClosed) return 1
+          if (!aIsClosed && bIsClosed) return -1
+          
+          // İkisi de kapalı değilse veya ikisi de kapalıysa doluluk oranına göre sırala
           return occupancyA - occupancyB
         }
       })

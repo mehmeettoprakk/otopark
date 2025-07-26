@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { OpeningHours } from '@/types/parking';
+import { OpeningHours, ParkingStatus } from '@/types/parking';
 import { isParkingOpen, getNextOpeningTime, getTimeUntilClosing } from '@/utils/openingHours';
 
 interface ParkingTimeStatus {
@@ -12,7 +12,7 @@ interface ParkingTimeStatus {
 /**
  * Otopark çalışma saatleri durumunu izleyen hook
  */
-export const useParkingTimeStatus = (openingHours: OpeningHours): ParkingTimeStatus => {
+export const useParkingTimeStatus = (openingHours: OpeningHours, parkingStatus?: ParkingStatus): ParkingTimeStatus => {
   const [timeStatus, setTimeStatus] = useState<ParkingTimeStatus>({
     isOpen: false,
     nextOpeningTime: null,
@@ -23,13 +23,18 @@ export const useParkingTimeStatus = (openingHours: OpeningHours): ParkingTimeSta
   useEffect(() => {
     const updateTimeStatus = () => {
       const now = new Date();
-      const isOpen = isParkingOpen(openingHours, now);
+      let isOpen = isParkingOpen(openingHours, now);
       const nextOpeningTime = getNextOpeningTime(openingHours, now);
       const timeUntilClosing = getTimeUntilClosing(openingHours, now);
 
+      // Manuel kapalı durumunu kontrol et
+      if (parkingStatus === ParkingStatus.CLOSED) {
+        isOpen = false;
+      }
+
       let statusMessage = '';
 
-      if (isOpen) {
+      if (isOpen && parkingStatus !== ParkingStatus.CLOSED) {
         if (timeUntilClosing !== null) {
           const hours = Math.floor(timeUntilClosing / 60);
           const minutes = timeUntilClosing % 60;
@@ -43,7 +48,10 @@ export const useParkingTimeStatus = (openingHours: OpeningHours): ParkingTimeSta
           statusMessage = 'Açık';
         }
       } else {
-        if (nextOpeningTime) {
+        // Manuel kapalı durumu için sadece "Kapalı" yaz
+        if (parkingStatus === ParkingStatus.CLOSED) {
+          statusMessage = 'Kapalı';
+        } else if (nextOpeningTime) {
           const diffMs = nextOpeningTime.getTime() - now.getTime();
           const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
           const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -76,7 +84,7 @@ export const useParkingTimeStatus = (openingHours: OpeningHours): ParkingTimeSta
     const interval = setInterval(updateTimeStatus, 60000);
     
     return () => clearInterval(interval);
-  }, [openingHours]); // openingHours dependency
+  }, [openingHours, parkingStatus]); // openingHours ve parkingStatus dependencies
 
   return timeStatus;
 };
