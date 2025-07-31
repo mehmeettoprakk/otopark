@@ -23,11 +23,11 @@ export default function HeroSection({ isDarkMode }: HeroSectionProps) {
         </span>{' '}
         Keşfedin
       </h2>
-      
+
       <p className={`text-base sm:text-lg md:text-xl max-w-3xl mx-auto animate-fade-in-up animation-delay-200 transition-colors duration-300 ${
         getTextClasses('secondary', isDarkMode)
       }`}>
-        Akıllı algoritma ile size en uygun park yerini bulun. Gerçek zamanlı doluluk oranları ve mesafe bilgileri.
+        Akıllı algoritma ile size en uygun park yerini bulun! Gerçek zamanlı doluluk oranları ve mesafe bilgileri.
       </p>
     </div>
   )
