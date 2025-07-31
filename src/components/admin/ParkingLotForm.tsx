@@ -296,7 +296,7 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
               <Clock className="mr-2 h-5 w-5" />
               🕒 Çalışma Saatleri
             </label>
-            <div className={`border rounded-xl p-6 space-y-4 transition-all duration-300 ${
+            <div className={`border rounded-xl p-4 sm:p-6 space-y-3 sm:space-y-4 transition-all duration-300 ${
               isDarkMode 
                 ? 'border-gray-600 bg-gray-800/50' 
                 : 'border-gray-200 bg-gray-50/50'
@@ -304,13 +304,13 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
               {Object.entries(dayNames).map(([dayKey, dayName]) => {
                 const dayData = formData.openingHours[dayKey as keyof OpeningHours];
                 return (
-                  <div key={dayKey} className="flex items-center justify-between space-x-4">
-                    <div className="flex items-center space-x-3 min-w-[120px]">
+                  <div key={dayKey} className="space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:space-x-4">
+                    <div className="flex items-center space-x-3 min-w-0 sm:min-w-[120px]">
                       <input
                         type="checkbox"
                         checked={dayData.isOpen}
                         onChange={(e) => handleOpeningHoursChange(dayKey as keyof OpeningHours, 'isOpen', e.target.checked)}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
                       />
                       <span className={`font-medium transition-colors duration-300 ${
                         isDarkMode ? 'text-gray-200' : 'text-gray-700'
@@ -320,9 +320,9 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
                     </div>
                     
                     {dayData.isOpen && (
-                      <div className="flex items-center space-x-3">
+                      <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-3 ml-7 sm:ml-0">
                         <div className="flex items-center space-x-2">
-                          <span className={`text-sm transition-colors duration-300 ${
+                          <span className={`text-xs sm:text-sm whitespace-nowrap transition-colors duration-300 ${
                             isDarkMode ? 'text-gray-300' : 'text-gray-600'
                           }`}>
                             Açılış:
@@ -331,7 +331,7 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
                             type="time"
                             value={dayData.openTime}
                             onChange={(e) => handleOpeningHoursChange(dayKey as keyof OpeningHours, 'openTime', e.target.value)}
-                            className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
+                            className={`px-2 sm:px-3 py-1 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm ${
                               isDarkMode 
                                 ? 'border-gray-600 bg-gray-700 text-gray-100' 
                                 : 'border-gray-300 bg-white text-gray-900'
@@ -339,7 +339,7 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
                           />
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className={`text-sm transition-colors duration-300 ${
+                          <span className={`text-xs sm:text-sm whitespace-nowrap transition-colors duration-300 ${
                             isDarkMode ? 'text-gray-300' : 'text-gray-600'
                           }`}>
                             Kapanış:
@@ -348,7 +348,7 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
                             type="time"
                             value={dayData.closeTime}
                             onChange={(e) => handleOpeningHoursChange(dayKey as keyof OpeningHours, 'closeTime', e.target.value)}
-                            className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 ${
+                            className={`px-2 sm:px-3 py-1 sm:py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-sm ${
                               isDarkMode 
                                 ? 'border-gray-600 bg-gray-700 text-gray-100' 
                                 : 'border-gray-300 bg-white text-gray-900'
@@ -359,7 +359,7 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
                     )}
                     
                     {!dayData.isOpen && (
-                      <span className={`text-sm font-medium px-3 py-1 rounded-full transition-colors duration-300 ${
+                      <span className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-full transition-colors duration-300 ml-7 sm:ml-0 inline-block ${
                         isDarkMode 
                           ? 'bg-red-900/30 text-red-300 border border-red-800' 
                           : 'bg-red-100 text-red-600 border border-red-200'
