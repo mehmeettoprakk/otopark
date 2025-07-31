@@ -72,10 +72,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-4': {
-      name: 'Kadıköy Rıhtım Otoparkı',
-      address: 'Kadıköy Rıhtımı, Kadıköy/İstanbul',
-      latitude: 40.9906,
-      longitude: 29.0275,
+      name: 'Çeşmeli Otoparkı',
+      address: 'Karaoğlan, Çatal Sk., 10010 Balıkesir Merkez/Balıkesir',
+      latitude: 39.6498,
+      longitude: 27.8789,
       totalSpaces: 120,
       occupiedSpaces: 30,
       hourlyRate: 22,
@@ -94,10 +94,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-5': {
-      name: 'Levent Metro Otoparkı',
-      address: 'Levent, Beşiktaş/İstanbul',
-      latitude: 41.0814,
-      longitude: 29.0092,
+      name: 'Levent Otopark',
+      address: 'Hacı İlbey, 9006 Sokak No 16, 10100 Altıeylül/Balıkesir',
+      latitude: 39.6446,
+      longitude: 27.8772,
       totalSpaces: 300,
       occupiedSpaces: 180,
       hourlyRate: 35,
@@ -107,10 +107,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-6': {
-      name: 'Şişli Cevahir AVM Otoparkı',
-      address: 'Şişli, İstanbul',
-      latitude: 41.0581,
-      longitude: 28.9869,
+      name: 'Han Otopark',
+      address: 'Gümüsçesme, 184. Sk. 18-20, 10040 Balıkesir Merkez/Balıkesir',
+      latitude: 39.6522,
+      longitude: 27.9170,
       totalSpaces: 500,
       occupiedSpaces: 425,
       hourlyRate: 15,
@@ -120,10 +120,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-7': {
-      name: 'Üsküdar Merkez Otoparkı',
-      address: 'Üsküdar Merkez, Üsküdar/İstanbul',
-      latitude: 41.0276,
-      longitude: 29.0194,
+      name: 'Kef Vale Otopark',
+      address: 'Dumlupınar, Alanlar Sk. No:11, 10010 Karesi/Balıkesir',
+      latitude: 39.6469,
+      longitude: 27.8800,
       totalSpaces: 100,
       occupiedSpaces: 0,
       hourlyRate: 18,
@@ -133,10 +133,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-8': {
-      name: 'Bakırköy Sahil Otoparkı',
-      address: 'Bakırköy Sahil, Bakırköy/İstanbul',
-      latitude: 40.9723,
-      longitude: 28.8732,
+      name: '3 Katlı Oto Park Harun Erol',
+      address: 'Yıldırım, Paşasaray Sk., 10010 Balıkesir Merkez/Balıkesir',
+      latitude: 39.6488,
+      longitude: 27.8843,
       totalSpaces: 150,
       occupiedSpaces: 120,
       hourlyRate: 20,
@@ -146,10 +146,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-9': {
-      name: 'Maslak Business Otoparkı',
-      address: 'Maslak, Şişli/İstanbul',
-      latitude: 41.1067,
-      longitude: 29.0222,
+      name: 'Balpark Balıkesir Otopark İşletmeleri',
+      address: 'Karesi, Alankuyu Sk. 1 B, 10010 Karesi/Balıkesir',
+      latitude: 39.6500,
+      longitude: 27.8804,
       totalSpaces: 250,
       occupiedSpaces: 80,
       hourlyRate: 40,
@@ -159,10 +159,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-10': {
-      name: 'Galata Tower Otoparkı',
-      address: 'Galata, Beyoğlu/İstanbul',
-      latitude: 41.0256,
-      longitude: 28.9741,
+      name: 'MAY-WAX OTOPARK',
+      address: 'Altı Eylül, Atalar Cd. No:76, 10100 Altıeylül/Balıkesir',
+      latitude: 39.6431,
+      longitude: 27.8817,
       totalSpaces: 90,
       occupiedSpaces: 75,
       hourlyRate: 35,
@@ -172,10 +172,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-11': {
-      name: 'Ortaköy Mecidiye Otoparkı',
-      address: 'Ortaköy, Beşiktaş/İstanbul',
-      latitude: 41.0553,
-      longitude: 29.0264,
+      name: 'Özel Nev Balıkesir Hastanesi Otoparkı',
+      address: 'Paşa Alanı, 128. Sk. No:1, 10020 Balıkesir Merkez/Balıkesir',
+      latitude: 39.6675,
+      longitude: 27.9090,
       totalSpaces: 120,
       occupiedSpaces: 45,
       hourlyRate: 30,
@@ -185,10 +185,10 @@ export const demoData = {
       updatedAt: new Date().toISOString()
     },
     'parking-12': {
-      name: 'Pendik Marina Otoparkı',
-      address: 'Pendik Marina, Pendik/İstanbul',
-      latitude: 40.8743,
-      longitude: 29.2333,
+      name: '1 Nolu Katlı Otopark',
+      address: 'Hisariçi, 10100 Balıkesir Merkez/Balıkesir',
+      latitude: 39.6508,
+      longitude: 27.8816,
       totalSpaces: 180,
       occupiedSpaces: 160,
       hourlyRate: 25,
