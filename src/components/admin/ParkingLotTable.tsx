@@ -275,28 +275,28 @@ export default function ParkingLotTable({
             return (
               <div key={lot.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
                 {/* Card Header */}
-                <div className="bg-slate-50 dark:bg-slate-750 px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-indigo-500 dark:bg-indigo-600 rounded-lg flex items-center justify-center">
+                <div className="bg-slate-100 dark:bg-slate-700 px-4 py-4 border-b border-slate-200 dark:border-slate-600">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start space-x-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 bg-indigo-500 dark:bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
                         <Car className="h-5 w-5 text-white" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-slate-900 dark:text-slate-100 text-sm">{lot.name}</h3>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{lot.address}</p>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-slate-900 dark:text-slate-50 text-lg mb-1 leading-tight">{lot.name}</h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed break-words">{lot.address}</p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-shrink-0">
                       <button
                         onClick={() => onEditLot(lot)}
-                        className="w-8 h-8 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-500 hover:text-white transition-all duration-200 flex items-center justify-center"
+                        className="w-9 h-9 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg hover:bg-indigo-500 hover:text-white transition-all duration-200 flex items-center justify-center"
                         title="Düzenle"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => onDeleteLot(lot.id)}
-                        className="w-8 h-8 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all duration-200 flex items-center justify-center"
+                        className="w-9 h-9 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-lg hover:bg-rose-500 hover:text-white transition-all duration-200 flex items-center justify-center"
                         title="Sil"
                       >
                         <Trash2 className="h-4 w-4" />
