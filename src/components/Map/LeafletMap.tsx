@@ -35,12 +35,8 @@ const getStatusStyle = (status: ParkingStatus, occupancy: number) => {
       return { color: '#f97316', bg: '#fed7aa', emoji: '🟡', text: 'Az Yer' }
     case ParkingStatus.OCCUPIED:
       return { color: '#ef4444', bg: '#fee2e2', emoji: '🔴', text: 'Dolu' }
-    case ParkingStatus.MAINTENANCE:
-      return { color: '#8b5cf6', bg: '#e9d5ff', emoji: '🔧', text: 'Bakımda' }
     case ParkingStatus.CLOSED:
       return { color: '#6b7280', bg: '#f3f4f6', emoji: '🚫', text: 'Kapalı' }
-    case ParkingStatus.RESERVED:
-      return { color: '#3b82f6', bg: '#dbeafe', emoji: '🅿️', text: 'Rezerve' }
     default:
       return { color: '#10b981', bg: '#d1fae5', emoji: '🟢', text: 'Müsait' }
   }

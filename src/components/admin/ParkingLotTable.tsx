@@ -209,8 +209,6 @@ export default function ParkingLotTable({
                               ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 hover:bg-emerald-200' 
                               : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.OCCUPIED
                               ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-700 hover:bg-rose-200'
-                              : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.MAINTENANCE
-                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700 hover:bg-purple-200'
                               : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.CLOSED
                               ? 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-200'
                               : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 hover:bg-blue-200'
@@ -388,8 +386,6 @@ export default function ParkingLotTable({
                           ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700' 
                           : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.OCCUPIED
                           ? 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-700'
-                          : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.MAINTENANCE
-                          ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700'
                           : (lot.status || ParkingStatus.AVAILABLE) === ParkingStatus.CLOSED
                           ? 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700'
                           : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'

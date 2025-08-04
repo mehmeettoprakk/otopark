@@ -393,9 +393,7 @@ export default function ParkingLotForm({ lot, onSave, onCancel }: ParkingLotForm
                 <option value={ParkingStatus.AVAILABLE}>✅ Müsait</option>
                 <option value={ParkingStatus.NEARLY_FULL}>⚠️ Az Yer</option>
                 <option value={ParkingStatus.OCCUPIED}>🚫 Dolu</option>
-                <option value={ParkingStatus.MAINTENANCE}>🔧 Bakımda</option>
                 <option value={ParkingStatus.CLOSED}>🔒 Kapalı</option>
-                <option value={ParkingStatus.RESERVED}>🔷 Rezerve</option>
               </select>
             </div>
 

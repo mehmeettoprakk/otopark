@@ -109,9 +109,7 @@ function AdminDashboard() {
       case ParkingStatus.AVAILABLE: return 'Müsait'
       case ParkingStatus.NEARLY_FULL: return 'Az Yer'
       case ParkingStatus.OCCUPIED: return 'Dolu'
-      case ParkingStatus.MAINTENANCE: return 'Bakımda'
       case ParkingStatus.CLOSED: return 'Kapalı'
-      case ParkingStatus.RESERVED: return 'Rezerve'
       default: return 'Müsait'
     }
   }
@@ -153,7 +151,7 @@ function AdminDashboard() {
   }
 
   return (
-    <div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${
+    <div className={`min-h-screen relative overflow-hidden pb-14 transition-colors duration-300 ${
       isDarkMode 
         ? 'bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900' 
         : 'bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50'

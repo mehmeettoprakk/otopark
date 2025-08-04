@@ -42,12 +42,8 @@ export const getStatusStyle = (status: ParkingStatus, occupancy: number) => {
       return STATUS_STYLES.NEARLY_FULL
     case ParkingStatus.OCCUPIED:
       return STATUS_STYLES.OCCUPIED
-    case ParkingStatus.MAINTENANCE:
-      return STATUS_STYLES.MAINTENANCE
     case ParkingStatus.CLOSED:
       return STATUS_STYLES.CLOSED
-    case ParkingStatus.RESERVED:
-      return STATUS_STYLES.RESERVED
     default:
       return STATUS_STYLES.AVAILABLE
   }

@@ -34,7 +34,6 @@ export default function FilterControls({
     { value: ParkingStatus.AVAILABLE, label: 'Müsait' },
     { value: ParkingStatus.NEARLY_FULL, label: 'Az Yer' },
     { value: ParkingStatus.OCCUPIED, label: 'Dolu' },
-    { value: ParkingStatus.MAINTENANCE, label: 'Bakımda' },
     { value: ParkingStatus.CLOSED, label: 'Kapalı' }
   ]
 

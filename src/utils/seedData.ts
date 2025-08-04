@@ -102,7 +102,7 @@ export const demoData = {
       occupiedSpaces: 180,
       hourlyRate: 35,
       isActive: false,
-      status: 'maintenance',
+      status: 'closed',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -141,7 +141,7 @@ export const demoData = {
       occupiedSpaces: 120,
       hourlyRate: 20,
       isActive: true,
-      status: 'reserved',
+      status: 'nearly_full',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     },
@@ -193,7 +193,7 @@ export const demoData = {
       occupiedSpaces: 160,
       hourlyRate: 25,
       isActive: false,
-      status: 'maintenance',
+      status: 'closed',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }

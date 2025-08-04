@@ -12,10 +12,8 @@ export const updateParkingStatusByHours = (lot: ParkingLot, currentDate: Date = 
     return ParkingStatus.CLOSED;
   }
 
-  // Manuel durumları koru (bakım, rezerve, kapalı)
-  if (lot.status === ParkingStatus.MAINTENANCE || 
-      lot.status === ParkingStatus.RESERVED || 
-      lot.status === ParkingStatus.CLOSED) {
+  // Manuel durumları koru (kapalı)
+  if (lot.status === ParkingStatus.CLOSED) {
     return lot.status;
   }
 

@@ -16,9 +16,7 @@ interface ParkingStatistics {
   available: number
   nearlyFull: number
   occupied: number
-  maintenance: number
   closed: number
-  reserved: number
 }
 
 interface UseParkingOperationsReturn {
@@ -83,9 +81,7 @@ export function useParkingOperations({
     available: parkingLots.filter(lot => lot.status === ParkingStatus.AVAILABLE).length,
     nearlyFull: parkingLots.filter(lot => lot.status === ParkingStatus.NEARLY_FULL).length,
     occupied: parkingLots.filter(lot => lot.status === ParkingStatus.OCCUPIED).length,
-    maintenance: parkingLots.filter(lot => lot.status === ParkingStatus.MAINTENANCE).length,
-    closed: parkingLots.filter(lot => lot.status === ParkingStatus.CLOSED).length,
-    reserved: parkingLots.filter(lot => lot.status === ParkingStatus.RESERVED).length
+    closed: parkingLots.filter(lot => lot.status === ParkingStatus.CLOSED).length
   }), [parkingLots])
 
   const getDistance = (lot: ParkingLot): number | null => {

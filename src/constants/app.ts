@@ -47,26 +47,12 @@ export const STATUS_STYLES = {
     text: 'Dolu',
     borderColor: 'border-red-300'
   },
-  MAINTENANCE: {
-    color: 'text-purple-600',
-    bg: 'bg-purple-100',
-    emoji: '🔧',
-    text: 'Bakımda',
-    borderColor: 'border-purple-300'
-  },
   CLOSED: {
     color: 'text-gray-600',
     bg: 'bg-gray-100',
     emoji: '🚫',
     text: 'Kapalı',
     borderColor: 'border-gray-300'
-  },
-  RESERVED: {
-    color: 'text-blue-600',
-    bg: 'bg-blue-100',
-    emoji: '🅿️',
-    text: 'Rezerve',
-    borderColor: 'border-blue-300'
   }
 } as const
 

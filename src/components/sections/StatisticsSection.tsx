@@ -1,5 +1,5 @@
 import React from 'react'
-import { Car, BarChart3, TrendingUp, Users } from 'lucide-react'
+import { Car, BarChart3, TrendingUp, Users, Lock } from 'lucide-react'
 import { getCardClasses, getTextClasses, COMMON_CLASSES } from '@/utils/styleUtils'
 
 interface ParkingStatistics {
@@ -7,9 +7,7 @@ interface ParkingStatistics {
   available: number
   nearlyFull: number
   occupied: number
-  maintenance: number
   closed: number
-  reserved: number
 }
 
 interface StatisticsSectionProps {
@@ -72,12 +70,47 @@ export default function StatisticsSection({ statistics, isDarkMode }: Statistics
       value: statistics.occupied,
       icon: <Users className="h-full w-full text-white" />,
       color: 'bg-gradient-to-r from-red-500 to-red-600'
+    },
+    {
+      title: 'Kapalı',
+      value: statistics.closed,
+      icon: <Lock className="h-full w-full text-white" />,
+      color: 'bg-gradient-to-r from-gray-500 to-gray-600'
     }
   ]
 
   return (
     <div className="mb-8 sm:mb-12">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+      {/* Mobile Layout - Total on top, others in 2x2 grid */}
+      <div className="sm:hidden">
+        {/* Top card - Total */}
+        <div className="mb-3">
+          <StatCard
+            key={statCards[0].title}
+            icon={statCards[0].icon}
+            title={statCards[0].title}
+            value={statCards[0].value}
+            color={statCards[0].color}
+            isDarkMode={isDarkMode}
+          />
+        </div>
+        {/* Bottom 2x2 grid - Other 4 cards */}
+        <div className="grid grid-cols-2 gap-3">
+          {statCards.slice(1, 5).map((stat) => (
+            <StatCard
+              key={stat.title}
+              icon={stat.icon}
+              title={stat.title}
+              value={stat.value}
+              color={stat.color}
+              isDarkMode={isDarkMode}
+            />
+          ))}
+        </div>
+      </div>
+      
+      {/* Tablet and Desktop Layout */}
+      <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {statCards.map((stat) => (
           <StatCard
             key={stat.title}
